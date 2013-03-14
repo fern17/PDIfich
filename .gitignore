@@ -11,3 +11,17 @@
 *.lai
 *.la
 *.a
+
+#binarios
+*.bin
+
+#archivos temporales
+*.*~
+
+#imagenes
+*.gif
+*.tif
+*.jpg
+*.bmp
+*.ppm
+*.png
