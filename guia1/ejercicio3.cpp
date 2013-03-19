@@ -2,6 +2,9 @@
 #include <iostream>
 #include <cmath>
 #include <string>
+#include "../utils/bresenham.cpp"
+#include <vector>
+
 using namespace cimg_library;   //Necesario
 typedef struct click{
     int x;
@@ -23,6 +26,19 @@ float dist(click c1, click c2) {
     return sqrt(dx*dx + dy*dy);
 }
 
+CImg<unsigned char> obtenerPerfilDiagonal(CImg<unsigned char> img) {
+    std::vector<std::vector<unsigned int> > puntos_a_incluir;       //Aqui se guardaran los pares de coordenadas 
+    
+    utils::get_bresenham_coords(img.height(), img.width(), click1.x, click1.y, click2.x, click2.y, puntos_a_incluir); //obtenemos las coordenadas
+    CImg<unsigned char> recortado(puntos_a_incluir.size(), 1);    //Creamos una imagen de una fila
+    
+    //Recorremos el vector de coordenadas y copiamos los valores de cada pixel de la imagen
+    for (unsigned int i = 0; i < puntos_a_incluir.size(); i++) {
+        recortado(i,0) = img(puntos_a_incluir[i][0], puntos_a_incluir[i][1]);
+    }
+    return recortado;
+}
+
 bool obtenerPerfil(CImg<unsigned char> &img, CImg<unsigned char> &cortada) {
     if (dist(click1,click2) < 4) {
         //estan muy cerca, no sirve
@@ -41,6 +57,8 @@ bool obtenerPerfil(CImg<unsigned char> &img, CImg<unsigned char> &cortada) {
         cortada = img.get_crop(click1.x,click1.y,click2.x,click1.y);
     } else {
         std::cout<<"Diagonal\n";
+        cortada = obtenerPerfilDiagonal(img); 
+        /*
         //float pendiente = (click2.y - click1.y)/(click2.x - click1.x);
         float dx = click2.x - click1.x;
         float dy = click2.y - click1.y;
@@ -53,6 +71,7 @@ bool obtenerPerfil(CImg<unsigned char> &img, CImg<unsigned char> &cortada) {
                       y1r = -click2.x*sin(angulo) + click2.y*cos(angulo);
 
         cortada = img.get_crop(x0r,y0r,x1r,y1r);
+        */
     }
 
     return true;
@@ -61,11 +80,12 @@ bool obtenerPerfil(CImg<unsigned char> &img, CImg<unsigned char> &cortada) {
 
 //se supone que img es un arreglo de los valores de la imagen recortados
 CImg<unsigned char> perfilIntesidad(CImg<unsigned char> img) {
-    CImg<unsigned char> recortado;
+    
     if(obtenerPerfil(img,recortado)) 
         return recortado;
     else
         return img;
+    
 }
 
 //Funcion que toma una imagen cualquiera, y un titulo de ventana, y la muestra
