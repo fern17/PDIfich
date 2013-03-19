@@ -1,3 +1,3 @@
 all:
-	g++ -o ejercicio5.bin ejercicio5.cpp -O0 -lm -lpthread -lX11 
+	g++ -o ejercicio6.bin ejercicio6.cpp -O0 -lm -lpthread -lX11 
 
