@@ -1,3 +1,3 @@
 all:
-	g++ -o ejemplo2.bin ejemplo2.cpp -O0 -lm -lpthread -lX11 
+	g++ -o ejemplo1.bin ejemplo1.cpp -O0 -lm -lpthread -lX11 
 
