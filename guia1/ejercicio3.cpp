@@ -34,8 +34,11 @@ CImg<unsigned char> obtenerPerfilDiagonal(CImg<unsigned char> img) {
     
     //Recorremos el vector de coordenadas y copiamos los valores de cada pixel de la imagen
     for (unsigned int i = 0; i < puntos_a_incluir.size(); i++) {
+        std::cout<<puntos_a_incluir[i][0]<<' '<<puntos_a_incluir[i][1]<<'\n';
         recortado(i,0) = img(puntos_a_incluir[i][0], puntos_a_incluir[i][1]);
     }
+    
+    recortado.display();
     return recortado;
 }
 
@@ -80,7 +83,7 @@ bool obtenerPerfil(CImg<unsigned char> &img, CImg<unsigned char> &cortada) {
 
 //se supone que img es un arreglo de los valores de la imagen recortados
 CImg<unsigned char> perfilIntesidad(CImg<unsigned char> img) {
-    
+    CImg<unsigned char> recortado; 
     if(obtenerPerfil(img,recortado)) 
         return recortado;
     else
