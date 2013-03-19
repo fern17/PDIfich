@@ -13,6 +13,8 @@ void get_bresenham_coords(  unsigned int H,
 							std::vector<std::vector<unsigned int> > & coords
 						)	{
 	coords.clear();
+    //y1 = H - y1;
+    //y0 = H - y0;
     int dx = x1-x0,
         dy = y1-y0,
         y = y0,
