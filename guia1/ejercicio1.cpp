@@ -34,7 +34,7 @@ int main(int argc, char *argv[]) {
     // "Input..": descripcion de la opcion, para usarla con -h
     //
     // Para usar como: ejercicio1.bin -i "lena.jpg" -o "salida.jpg"
-    const char* input  = cimg_option("-i", "cameraman.tif", "Input Image File");
+    const char* input  = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
     const char* output = cimg_option("-o", "output1.bmp", "Output Image File");
 
     //Corta una imagen en las posiciones dadas, y la guarda en output

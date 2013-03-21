@@ -17,11 +17,8 @@ void disp(CImg<T> img, std::string title = "titulo") {
 
 
 int main(int argc, char *argv[]) {
-
-
-
-    
-bool patron_grises[10][3][3] = {
+   
+    bool patron_grises[10][3][3] = {
                         {{1,1,1},{1,1,1},{1,1,1}},
                         {{1,0,1},{1,1,1},{1,1,1}},
                         {{1,0,1},{1,1,1},{1,1,0}},
@@ -33,21 +30,12 @@ bool patron_grises[10][3][3] = {
                         {{0,0,0},{0,1,0},{0,0,0}},
                         {{0,0,0},{0,0,0},{0,0,0}}
                      };
-
-
-
-
-
-
-
     //Imprime información básica de la librería
     cimg_usage("Utilizacion de la libreria CImg");
 
-    const char* input = cimg_option("-o", "../images/huang2.jpg", "Output Image File");
+    const char* input = cimg_option("-i", "../images/huang2.jpg", "Output Image File");
 
     CImg<unsigned char> img_original(input);
-
-
 
     CImg<unsigned char> img(256,256);
 
@@ -56,11 +44,7 @@ bool patron_grises[10][3][3] = {
     }
     img_original = img;
 
-
-
-
     CImg<unsigned char> muy_original = img_original;
-
 
     // img_original.quantize(10); img_original.normalize(0,9);
     unsigned int h = img_original.height();
@@ -95,9 +79,9 @@ bool patron_grises[10][3][3] = {
         
     }
     
-disp(img_resultado);
-disp(img_resultado.resize(w,h));
-disp(muy_original);
+    disp(img_resultado);
+    disp(img_resultado.resize(w,h));
+    disp(muy_original);
 
     // std::vector<CImg <unsigned char> > img_vector;
 

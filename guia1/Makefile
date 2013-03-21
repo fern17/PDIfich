@@ -1,3 +1,4 @@
 all:
-	g++ -o ejercicio3.bin ejercicio3.cpp -O0 -lm -lpthread -lX11 -g 
-
+	g++ -o ejercicio$(e).bin ejercicio$(e).cpp -O0 -lm -lpthread -lX11 -g 
+clean:
+	rm ejercicio$(e).bin
