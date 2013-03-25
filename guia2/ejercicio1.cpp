@@ -111,13 +111,13 @@ void disp(CImg<T> mapeo, CImg<T> img, std::string title = "titulo") {
                 LUT.resize(256,0);
                 for (unsigned int i = 0; i < 256; i++) {
                     if (i < click1.x) { //primer tramo
-                        LUT[i] = utils::getValue(i,0,pendiente1,offset1);
+                        LUT[i] = utils::getLinearValue(i,0,pendiente1,offset1);
                     }
                     else if (i < click2.x) { //segundo tramo
-                        LUT[i] = utils::getValue(i,click1.x,pendiente2,offset2);
+                        LUT[i] = utils::getLinearValue(i,click1.x,pendiente2,offset2);
                     }
                     else { //tercer tramo
-                        LUT[i] = utils::getValue(i,click2.x,pendiente3,offset3);
+                        LUT[i] = utils::getLinearValue(i,click2.x,pendiente3,offset3);
                     }
                 }
                 CImg<unsigned char> nuevo_mapeo = imagenMapeo(LUT);
