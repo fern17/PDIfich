@@ -14,7 +14,7 @@
 
 #binarios
 *.bin
-
+*.gch
 #archivos temporales
 *.*~
 

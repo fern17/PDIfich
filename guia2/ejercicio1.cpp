@@ -6,6 +6,17 @@
 using namespace cimg_library;   //Necesario
 
 
+CImg<unsigned char> obtenerMapeo(std::vector<unsigned int> &LUT) {
+    unsigned int ancho = LUT.size();
+    CImg<unsigned char> mapeo(ancho, ancho);
+    for (unsigned int i = 0; i < ancho; i++) {
+        unsigned int valor = LUT[i];
+        mapeo(ancho - i, valor) = 255;
+    }
+    return mapeo;
+}
+
+
 //Funcion que toma una imagen cualquiera, y un titulo de ventana, y la muestra
 template<typename T>
 void disp(CImg<T> img, std::string title = "titulo") {
