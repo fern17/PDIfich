@@ -59,13 +59,89 @@ void disp(CImg<T> img, std::string title = "titulo") {
 }
 
 
-CImg<bool> andIMG(CImg<bool> & img1, CImg<bool> img2) {
+CImg<bool> andIMG(CImg<bool> img1, CImg<bool> img2) {
     assert(img1.is_sameXY(img2));
 
     CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
     
     cimg_forXY(img1, x, y) {
         resultado(x,y) = img1(x,y) && img2(x,y);
+    }    
+    return resultado;
+}
+
+CImg<bool> notIMG(CImg<bool>  img1) {
+    CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
+    
+    cimg_forXY(img1, x, y) {
+        resultado(x,y) = !img1(x,y);
+    }    
+    return resultado;
+}
+
+CImg<bool> orIMG(CImg<bool>  img1, CImg<bool> img2) {
+    assert(img1.is_sameXY(img2));
+
+    CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
+    
+    cimg_forXY(img1, x, y) {
+        resultado(x,y) = img1(x,y) or img2(x,y);
+    }    
+    return resultado;
+}
+
+CImg<bool> xorIMG(CImg<bool>  img1, CImg<bool> img2) {
+    assert(img1.is_sameXY(img2));
+
+    CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
+    
+    cimg_forXY(img1, x, y) {
+        resultado(x,y) = img1(x,y) xor img2(x,y);
+    }    
+    return resultado;
+}
+
+
+CImg<bool> menorIMG(CImg<unsigned char>  img1, CImg<unsigned char> img2) {
+    assert(img1.is_sameXY(img2));
+
+    CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
+    
+    cimg_forXY(img1, x, y) {
+        resultado(x,y) = img1(x,y) < img2(x,y);
+    }    
+    return resultado;
+}
+
+CImg<bool> menorigualIMG(CImg<unsigned char> img1, CImg<unsigned char> img2) {
+    assert(img1.is_sameXY(img2));
+
+    CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
+    
+    cimg_forXY(img1, x, y) {
+        resultado(x,y) = img1(x,y) <= img2(x,y);
+    }    
+    return resultado;
+}
+
+CImg<bool> mayorIMG(CImg<unsigned char>  img1, CImg<unsigned char> img2) {
+    assert(img1.is_sameXY(img2));
+
+    CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
+    
+    cimg_forXY(img1, x, y) {
+        resultado(x,y) = img1(x,y) > img2(x,y);
+    }    
+    return resultado;
+}
+
+CImg<bool> mayorigualIMG(CImg<unsigned char>  img1, CImg<unsigned char> img2) {
+    assert(img1.is_sameXY(img2));
+
+    CImg<bool> resultado(img1.width(), img1.height(), 1, 1, 0 );
+    
+    cimg_forXY(img1, x, y) {
+        resultado(x,y) = img1(x,y) >= img2(x,y);
     }    
     return resultado;
 }
@@ -95,45 +171,42 @@ int main(int argc, char *argv[]) {
     disp(img2bool);
     disp(mapeo);
 
-    salida = andIMG(img1bool, img2bool);
+
+    if (strcmp(operation,"and") == 0) {
+        salida = andIMG(img1bool, img2bool);
+
+    } else if (strcmp(operation,"or") == 0 ) {
+        
+        salida = orIMG(img1bool, img2bool);
+
+    } else if (strcmp(operation,"not") == 0 ) {
+    
+        salida = notIMG(img1bool);
+    } else if (strcmp(operation,"xor") == 0 ) {
+
+        salida = xorIMG(img1bool, img2bool);
+
+    } else if (strcmp(operation,"menor") == 0 ) {
+
+        salida = menorIMG(img1, img2);
+
+    } else if (strcmp(operation,"menorigual") == 0 ) {
+
+        salida = menorigualIMG(img1, img2);
+
+    } else if (strcmp(operation,"mayor") == 0 ) {
+
+        salida = mayorIMG(img1, img2);
+
+    } else if (strcmp(operation,"mayorigual") == 0 ) {
+        salida = mayorigualIMG(img1, img2);
+
+    } else {
+        salida = andIMG(xorIMG(img1bool, img2bool), orIMG( notIMG(img1bool), img2bool));
+
+    }
+    
     disp(salida);
 
-    // if (strcmp(operation,"and") == 0) {
-        
-    //     CImg<bool> mascara = drawcircle(img1.width() , img1.width()/4 );
-    //     salida = dividirImg(img1, mascara);
-        
-    // } else if (strcmp(operation,"resta") == 0 ) {
-        
-    //     salida = restarImg(img1, img2);
-
-    // } else if (strcmp(operation,"multiplicacion") == 0 ) {
-        
-    //     CImg<bool> mascara = drawcircle(img1.width() , img1.width()/4 );
-    //     salida = multiplicarImg(img1, mascara);
-
-    // } else if (strcmp(operation,"ruido") == 0 ) {
-
-    //     std::vector<CImg<unsigned char> > imagenes;
-
-    //     for ( unsigned int i = 0; i < cant_imagenes; i++ ) {
-    //         CImg<unsigned char> imgtmp(img1);
-    //         imgtmp.noise( 3 , 0 );
-    //         imagenes.push_back(imgtmp);
-    //     }
-
-    //     img2 = imagenes[25];
-    //     salida = limpiarRuido(imagenes);
-
-    // } else {
-    //     salida = sumarImg(img1, img2);
-
-    // }
-
-    // CImgList<unsigned char> lista;
-    // lista.assign(img1, img2, salida);
-
-    // lista.display();
-
-    // return 0;
+    return 0;
 }
