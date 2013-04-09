@@ -50,7 +50,6 @@ int main(int argc, char *argv[]) {
     	lista.push_back(plano);
     	std::cout<<"Bit plane #"<<i<<"\t ECM: "<<getECM(imagen, plano)<<"\t MSE: "<<imagen.MSE(plano)<<std::endl;
     }
-
     lista.display(ventana1, false);
 
     CImg<unsigned char> temporal = lista.at(7);
