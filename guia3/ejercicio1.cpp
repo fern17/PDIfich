@@ -9,27 +9,26 @@ using namespace cimg_library;   //Necesario
 
 
 int main(int argc, char *argv[]) {
-    double epsilon = 0.1;
-    cimg_usage("Utilizacion de la libreria CImg");
-    
-    const char* input = cimg_option("-r", "../images/blister_completo.jpg", "Input Image File");
-    CImg<unsigned char> img(input);
-    const unsigned char red[] = { 165,200,100 };
+    //@ histograma, ecualización, crear y graficar histograma
 
-    CImg<unsigned char> histograma, visu(img.width(),img.height(),1,1,0);
-    
-    histograma = img.get_histogram(256);
+    const char* _input = cimg_option("-r", "../images/blister_completo.jpg", "Input Image File");
+    CImg<unsigned char> input(_input) ,output, hinput, houtput;
 
-	CImgList<unsigned char> lista;
+    //Histograma de la entrada
+    hinput = input.get_histogram(256);
+    //Ecualizamos la imágen
+    output = input.get_equalize(256,0,255);
+    //Histograma de la salida
+    houtput = output.get_histogram(256);
 
-	lista.push_back(img);
-	lista.push_back(histograma.display_graph(0, 3));
-	
-	lista.push_back(img.get_equalize(256,0,255));
-	lista.push_back(img.get_equalize(256,0,255).get_histogram(256,0,255).display_graph(0,3) );
+    CImgList<unsigned char> lista;
+    lista.push_back(input);
+    lista.push_back(output);
 
+    lista.display();
 
-	lista.display();
+    hinput.display_graph("Histograma de la Entrada",3);
+    houtput.display_graph("Histograma de la Salida",3);
 
 
 }
