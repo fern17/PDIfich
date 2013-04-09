@@ -16,4 +16,22 @@ void genArchivoMascara(std::string archivo, unsigned int ancho, unsigned int alt
     }
     file.close();
 }
+
+void genArchivoMascaraGaussiana(std::string archivo, unsigned int ancho, unsigned int alto, float sigma) {
+    std::ofstream file(archivo.c_str(), std::ios::trunc);
+    file<<alto<<' '<<ancho<<'\n';
+    for (unsigned int i = 0; i < alto; i++) {
+        for (unsigned int j = 0; j < ancho; j++) {
+            int xx = j - (ancho/2.0);
+            int yy = i - (alto/2.0);
+            float value = (1/(2*3.14*sigma)) * exp(-(xx*xx+yy*yy)/(2*sigma*sigma));
+            file<<value<<' ';
+            //std::cout<<(float)value<<' ';
+        }
+        file<<'\n';
+        //std::cout<<"\n";
+    }
+    file.close();
+}
+
 }
