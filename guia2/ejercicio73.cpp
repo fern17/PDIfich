@@ -131,5 +131,6 @@ int main(int argc, char *argv[]) {
             std::cout<<"\t*** Falta la pastilla "<<i+1;
         }
     }
+    std::cout<<"\n\n";
 
 }
