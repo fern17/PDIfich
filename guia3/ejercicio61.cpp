@@ -9,7 +9,22 @@
 
 using namespace cimg_library;   //Necesario
 
+CImg<unsigned char> restarImg(CImg<unsigned char> & img1, CImg<unsigned char> & img2) {
+    assert( img1.is_sameXY(img2) );
 
+    CImg<unsigned char> salida(img1.width(), img1.height(), 1, 1, 0);
+
+    int temporal;
+    cimg_forXY(img1,x,y) {
+        temporal = (255 + img1(x,y) - img2(x,y) ) / 2;
+        if (temporal < 0) temporal = 0;
+        else if (temporal > 255) temporal = 255;
+        
+        salida(x,y) = temporal;
+    }
+
+    return salida;
+}
     
 CImg<float> get_filtro(std::string nombre) {
     std::ifstream f(nombre.c_str());
@@ -29,7 +44,9 @@ CImg<float> get_filtro(std::string nombre) {
             f>>valor;
             // std::cerr<<"wololo"<<valor<<"\n";
             salida(j,i) =  valor;
+            std::cout<<salida(j,i)<<' ';
         }
+        std::cout<<'\n';
     }
     f.close();
     return salida;
@@ -38,20 +55,23 @@ CImg<float> get_filtro(std::string nombre) {
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    //@ Leer filtro, aplicar filtro, convolve con filtro de distinta medida
+    //@ Leer filtro acentuado, aplicar filtro acentuado, convolve con filtro de distinta medida
 
-    const char* _input = cimg_option("-i", "../images/blister_completo.jpg", "Input Image File");
+    const char* _input = cimg_option("-i", "../images/lenna.gif", "Input Image File");
     const char* _filter = cimg_option("-m", "filtro_ej3.txt", "Input filter File");
-    const unsigned int _lado = cimg_option("-l", 5, "Input filter File");
 
-    utils::genArchivoMascara(_filter, _lado, _lado);
-    CImg<unsigned char> img(_input), output;
-    
+
+    CImg<unsigned char> img(_input), filtrada(img.width(), img.height(), 1, 1, 0), output;
+
+    //Leemos el filtro de acentuado
     CImg<float> filtro = get_filtro(_filter);
 
+    filtrada = img.get_convolve(filtro);
 
-    output = img.convolve(filtro,1 ,1);
+    output = restarImg(img,filtrada);
 
-    output.display();
-   
+
+    CImgList<unsigned char> lista;
+    lista.assign(img, output.normalize(0,255) );
+    lista.display();
 }
