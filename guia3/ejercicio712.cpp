@@ -17,7 +17,7 @@ bool fueraDeRango(CImg<T> img, int x, int y, int w, int h) {
 template<typename T>
 //Esta funcion lo que hace es devolverte el vecindario centrado en x0,y0 y de tamanio step_x*2 x step_y*2...
 CImg<T> obtenerVecindario(CImg<T> &img, unsigned int x0, unsigned int y0, unsigned int w, unsigned int h, unsigned int step_x, unsigned int step_y) {
-    CImg<T> ret_val (step_x*2+1, step_y*2+1,1, 1, 0); //imagen a retornar que es un vecindario de img de tamaño ancho x alto
+    CImg<T> ret_val (step_x*2+1, step_y*2+1, 1, 1, 0); //imagen a retornar que es un vecindario de img de tamaño ancho x alto
     unsigned int xx = 0;           //posicion x a reemplazar en ret_val
     unsigned int yy = 0;           //posicion y a reemplazar en ret_val
     for (int i = y0 - step_y; i <= y0 + step_y; i++, yy++) {   //Here be dragons... 
@@ -68,13 +68,15 @@ CImg<T> histogramaLocal(CImg<T> img, unsigned int ancho = 3, unsigned int alto =
 }
 
 int main(int argc, char *argv[]) {
-    const char* _input  = cimg_option("-i", "../images/cuadros.tif", "Input Image File");
+    const char* _input  = cimg_option("-i", "../images/esqueleto.tif", "Input Image File");
     const unsigned int _ancho = cimg_option("-w", 3, "Ancho de la mascara");
     const unsigned int _alto = cimg_option("-h", 3, "Alto de la mascara");
 
     CImg<unsigned char> img(_input);
     CImg<unsigned char> hist_local = histogramaLocal(img, _ancho, _alto);
+    CImgDisplay disp (img,"titulo", 0);
+    while(!disp.is_closed()) {}
     hist_local.display();
 
     return 0;
- }
+}
