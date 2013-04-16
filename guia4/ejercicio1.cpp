@@ -14,7 +14,7 @@ int main(int argc, char *argv[]) {
     
     const char* input = cimg_option("-i", "../images/patron.tif", "Input Image File");
     
-    CImg<float> img(input), generada, img_hsi, r, g, b, h, s, i;
+    CImg<double> img(input), generada, img_hsi, generada_rgb, r, g, b, h, s, i, rr, gg, bb;
 
     	
     r = img.get_channel(0);
@@ -23,29 +23,34 @@ int main(int argc, char *argv[]) {
     img_hsi = img.get_RGBtoHSI();
 
     h = img_hsi.get_channel(0);
-    i = img_hsi.get_channel(1);
-    s = img_hsi.get_channel(2);
+    s = img_hsi.get_channel(1);
+    i = img_hsi.get_channel(2);
 
     CImgList<float> lista;
     lista.assign(img,img_hsi, r,g,b, h, s ,i );
-    lista.display();
+    //lista.display();
 
 
     //ejercicio b
 	h.mirror('x');
-	
-	cimg_forXY(i, x  , y) {
-		i(x,y) = 255;
-		s(x,y) = 255;
+    generada = img_hsi;	
+	cimg_forXY(generada, x  , y) {
+        generada(x,y,0,0) = h(x,y);
+		generada(x,y,0,1) = 1;
+		generada(x,y,0,2) = 1;
 	}
-	i.display();
 
-    generada.channel(0) = h;
-    generada.channel(1) = s;
-    generada.channel(2) = i;
+    h = generada.get_channel(0);
+    s = generada.get_channel(1);
+    i = generada.get_channel(2);
 
-    CImgList<float> listab;
-    listab.assign(generada, h , s , i);
+    generada_rgb = generada.get_HSItoRGB();
+    rr = generada_rgb.get_channel(0);
+    gg = generada_rgb.get_channel(1);
+    bb = generada_rgb.get_channel(2);
+
+    CImgList<double> listab;
+    listab.assign(generada, rr, gg, bb, h , s , i);
 
     listab.display();
 
