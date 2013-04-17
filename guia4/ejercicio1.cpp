@@ -2,6 +2,28 @@
 #include <iostream>
 using namespace cimg_library;   //Necesario
 
+CImg<double> inverso_i(CImg<double> &i) {
+    CImg<double> salida = i;
+    cimg_forXY(i, x, y) {
+        salida(x,y) =  1 - i(x,y);
+    }
+    return salida;
+
+}
+
+CImg<double> inverso_h(CImg<double> &h) {
+    CImg<double> salida = h;
+    cimg_forXY(h, x, y) {
+        if (h(x,y) < 180) {
+            salida(x,y) = h(x,y) + 180;
+        } else {
+            salida(x,y) = h(x,y) - 180;
+        }
+    }
+    return salida;
+}
+
+
 int main(int argc, char *argv[]) {
     //Imprime información básica de la librería
     cimg_usage("Utilizacion de la libreria CImg");
@@ -20,7 +42,7 @@ int main(int argc, char *argv[]) {
     s = img_hsi.get_channel(1);
     i = img_hsi.get_channel(2);
 
-    CImgList<float> lista;
+    CImgList<double> lista;
     lista.assign(img,img_hsi, r,g,b, h, s ,i );
     //lista.display();
 
@@ -44,9 +66,35 @@ int main(int argc, char *argv[]) {
     bb = generada_rgb.get_channel(2);
 
     CImgList<double> listab;
-    listab.assign(generada_rgb, rr, gg, bb, h , s , i);
+    listab.assign(generada_rgb, rr, gg, bb, h , s , i );
 
     listab.display();
+
+    
+
+    //Parte b! (pobre Unión)
+
+    CImg<double> imagen("../images/patron.tif"), copia;
+
+    copia = imagen;
+    imagen.RGBtoHSI();
+
+    h = imagen.get_channel(0);
+    s = imagen.get_channel(1);
+    i = imagen.get_channel(2);
+
+    h = inverso_h(h);
+    i = inverso_i(i);
+    h.append(s,'c');
+    h.append(i,'c');
+
+    imagen =  h;
+    
+    CImgList<double> listac;
+    listac.assign(copia, imagen.HSItoRGB());
+
+    listac.display();
+
 
     return 0;
 }
