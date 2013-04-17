@@ -1,12 +1,6 @@
 #include <CImg.h>               //include basico de CImg
 #include <iostream>
-#include <cmath>
-#include <string>
-#include <vector>
-#include <fstream>
-#include "../utils/getValue.cpp"
 using namespace cimg_library;   //Necesario
-
 
 int main(int argc, char *argv[]) {
     //Imprime información básica de la librería
@@ -35,9 +29,9 @@ int main(int argc, char *argv[]) {
 	h.mirror('x');
     generada = img_hsi;	
 	cimg_forXY(generada, x  , y) {
-        generada(x,y,0,0) = h(x,y);
-		generada(x,y,0,1) = 1;
-		generada(x,y,0,2) = 1;
+        generada(x,y,0,0) = h(x,y); //H va de 0 a 360 segun @escudero89
+		generada(x,y,0,1) = 1;      //S va de 0 a 1
+		generada(x,y,0,2) = 1;      //I va de 0 a 1
 	}
 
     h = generada.get_channel(0);
@@ -50,7 +44,7 @@ int main(int argc, char *argv[]) {
     bb = generada_rgb.get_channel(2);
 
     CImgList<double> listab;
-    listab.assign(generada, rr, gg, bb, h , s , i);
+    listab.assign(generada_rgb, rr, gg, bb, h , s , i);
 
     listab.display();
 
