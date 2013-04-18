@@ -25,6 +25,7 @@ CImg<double> inverso_h(CImg<double> &h) {
 
 
 int main(int argc, char *argv[]) {
+     //@ Lee una paleta de colores y convierte una imagen en gris en una imagen en falso color usando la paleta
     //Imprime información básica de la librería
     cimg_usage("Utilizacion de la libreria CImg");
     
