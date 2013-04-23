@@ -1,0 +1,3 @@
+ROJO: Centro en  37, radio 10 
+VERDE: Centro en 87, radio 8
+AZUL: Centro en 215, radio 40

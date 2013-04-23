@@ -47,6 +47,8 @@ int main(int argc, char *argv[]) {
     //Declaramos imagenes a trabajar
     CImg<double> input(_input), output(input.width(), input.height(), input.depth(), 3 , 0) ;
 
+    (input.get_RGBtoHSI().get_channel(0), input.get_RGBtoHSI().get_channel(1)).display();
+
 
     CImg<double> recorte = input.get_crop(132,105,203,230);
     // recorte.display();
