@@ -1,98 +1,117 @@
 #include <CImg.h>               //include basico de CImg
 #include <iostream>
+#include "../utils/PDI_functions.h"
 using namespace cimg_library;   //Necesario
 
-CImg<double> inverso_i(CImg<double> &i) {
-    CImg<double> salida = i;
-    cimg_forXY(i, x, y) {
-        salida(x,y) =  1 - i(x,y);
+CImg<bool> lineaVertical(unsigned int w, unsigned int h, unsigned int pos = 0) {
+    CImg<bool> ret_val(w,h,1,1,false);
+    for (unsigned int i = 0; i < h; i++) {
+        ret_val(pos,i) = true;
     }
-    return salida;
+    return ret_val;
+}
+
+CImg<bool> lineaHorizontal(unsigned int w, unsigned int h, unsigned int pos = 0) {
+    CImg<bool> ret_val(w,h,1,1,false);
+    for (unsigned int i = 0; i < h; i++) {
+        ret_val(i,pos) = true;
+    }
+    return ret_val;
+}
+
+CImg<bool> rectCentrado(unsigned int w, unsigned int h, unsigned int w1, unsigned int w2) {
+    CImg<bool> ret_val(w,h,1,1,false);
+    unsigned int xc = w/2;
+    unsigned int yc = h/2;
+    for (unsigned int i = xc - w1/2; i <= xc + w1/2; i++) {
+        for (unsigned int j = xc - w2/2; j <= xc + w2/2; j++) {
+            ret_val(i,j) = true;
+        }
+    }
+    return ret_val;
+}
+
+CImg<bool> circuloCentrado(unsigned int lado, unsigned int radio) {
+    CImg<bool> ret_val(lado,lado,1,1,false);
+
+    unsigned int centro = lado/2;
+
+    cimg_forXY(ret_val,x,y) {
+        if (  (x-centro)*(x-centro) + (y-centro)*(y-centro) <= radio*radio  )
+            ret_val(x,y) = true;
+    }
+    return ret_val;
+}
+
+void inciso3() {
+    
+    unsigned int w = 256;
+    unsigned int h = 256;
+
+    CImg<double> linea_vertical = lineaVertical(w,h,w/2).get_normalize(0,255);
+    CImg<double> linea_horizontal = lineaHorizontal(w,h,h/2).get_normalize(0,255);
+    CImg<double> cuadrado = rectCentrado(w,h,w/4,h/4).get_normalize(0,255);
+    CImg<double> rectangulo = rectCentrado(w,h,w/2,h/10).get_normalize(0,255);
+    CImg<double> circulo = circuloCentrado(w,w/1.8).get_normalize(0,255);
+
+    CImgList<double> lista;
+    lista.assign(linea_vertical,linea_horizontal,cuadrado,rectangulo,circulo);
+    lista.display();
+
+  //CImgList<double> f_linea_vertical = linea_vertical.get_FFT();
+  //CImgList<double> f_linea_horizontal = linea_horizontal.get_FFT();
+  //CImgList<double> f_cuadrado = cuadrado.get_FFT();
+  //CImgList<double> f_rectangulo = rectangulo.get_FFT();
+  //CImgList<double> f_circulo = circulo.get_FFT();
+
+    CImg<double> fm_linea_vertical = magn_tdf(linea_vertical, true); 
+    CImg<double> fm_linea_horizontal = magn_tdf(linea_horizontal, true); 
+    CImg<double> fm_cuadrado = magn_tdf(cuadrado, true); 
+    CImg<double> fm_rectangulo = magn_tdf(rectangulo, true); 
+    CImg<double> fm_circulo = magn_tdf(circulo, true); 
+
+    CImgList<double> lista_fft;
+    lista_fft.assign(fm_linea_vertical, fm_linea_horizontal, fm_cuadrado, fm_rectangulo, fm_circulo);
+    lista_fft.display();
+
 
 }
 
-CImg<double> inverso_h(CImg<double> &h) {
-    CImg<double> salida = h;
-    cimg_forXY(h, x, y) {
-        if (h(x,y) < 180) {
-            salida(x,y) = h(x,y) + 180;
-        } else {
-            salida(x,y) = h(x,y) - 180;
-        }
-    }
-    return salida;
+void inciso4() {
+    unsigned int w = 512;
+    unsigned int h = 512;
+
+    CImg<double> linea = lineaVertical(w,h,w/2).get_normalize(0,255);
+    CImg<double> rotada = linea.get_rotate(20);
+
+    CImg<double> c_linea = linea.get_crop(w/4,h/4,3*w/4, 3*h/4);
+    CImg<double> c_rotada = rotada.get_crop(w/4+100,h/4,3*w/4+100, 3*h/4);
+
+    CImgList<double> lista;
+    lista.assign(linea,rotada,c_linea,c_rotada);
+    lista.display();
+
+    CImg<double> fm_linea = magn_tdf(c_linea, true); 
+    CImg<double> fm_rotada = magn_tdf(c_rotada, true); 
+
+    CImgList<double> lista_fft;
+    lista_fft.assign(fm_linea, fm_rotada);
+    lista_fft.display();
+
+}
+
+void inciso5(const char *input) {
+    CImg<double> img(input);
+    CImg<double> fm_img = magn_tdf(img,true);
+    (img,fm_img).display();
 }
 
 
 int main(int argc, char *argv[]) {
-     //@ Lee una paleta de colores y convierte una imagen en gris en una imagen en falso color usando la paleta
-    //Imprime información básica de la librería
-    cimg_usage("Utilizacion de la libreria CImg");
-    
-    const char* input = cimg_option("-i", "../images/patron.tif", "Input Image File");
-    
-    CImg<double> img(input), generada, img_hsi, generada_rgb, r, g, b, h, s, i, rr, gg, bb;
 
-    r = img.get_channel(0);
-    g = img.get_channel(1);
-    b = img.get_channel(2);
-    img_hsi = img.get_RGBtoHSI();
-
-    h = img_hsi.get_channel(0);
-    s = img_hsi.get_channel(1);
-    i = img_hsi.get_channel(2);
-
-    CImgList<double> lista;
-    lista.assign(img,img_hsi, r,g,b, h, s ,i );
-    //lista.display();
-
-
-    //ejercicio b
-	h.mirror('x');
-    generada = img_hsi;	
-	cimg_forXY(generada, x  , y) {
-        generada(x,y,0,0) = h(x,y); //H va de 0 a 360 segun @escudero89
-		generada(x,y,0,1) = 1;      //S va de 0 a 1
-		generada(x,y,0,2) = 1;      //I va de 0 a 1
-	}
-
-    h = generada.get_channel(0);
-    s = generada.get_channel(1);
-    i = generada.get_channel(2);
-
-    generada_rgb = generada.get_HSItoRGB();
-    rr = generada_rgb.get_channel(0);
-    gg = generada_rgb.get_channel(1);
-    bb = generada_rgb.get_channel(2);
-
-    CImgList<double> listab;
-    listab.assign(generada_rgb, rr, gg, bb, h , s , i );
-
-    listab.display();
-
-    
-
-    //Parte b! (pobre Unión)
-
-    CImg<double> imagen("../images/patron.tif"), copia;
-
-    copia = imagen;
-    imagen.RGBtoHSI();
-
-    h = imagen.get_channel(0);
-    s = imagen.get_channel(1);
-    i = imagen.get_channel(2);
-
-    h = inverso_h(h);
-    i = inverso_i(i);
-    h.append(s,'c');
-    h.append(i,'c');
-
-    imagen =  h;
-    
-    CImgList<double> listac;
-    listac.assign(copia, imagen.HSItoRGB());
-
-    listac.display();
+	const char* input = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
+    //inciso3();
+    //inciso4();
+    inciso5(input);
     return 0;
 }

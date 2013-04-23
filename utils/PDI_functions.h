@@ -294,7 +294,7 @@ CImg<float> cargar_paleta(const char* filename="../../paletas/gray.pal"){
 ///****************************************
 /// Magnitud de la TDF transformada logaritmicamente
 ///****************************************
-CImg<double> magn_tdf(CImg<double> image,bool centrada=true,const char* palname="../../paletas/gray.pal"){
+CImg<double> magn_tdf(CImg<double> image,bool centrada=true,const char* palname="../images/paletas/hot.pal"){
   CImgList<double> tf=image.get_FFT(false);  // lista con 2 imagenes: parte real e imaginaria
   CImg<double> preal=tf[0], pimag=tf[1]; // partes separadas
   int nn=preal.width();
