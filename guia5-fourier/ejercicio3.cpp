@@ -30,9 +30,6 @@ CImg<float> get_filtro(std::string nombre) {
     return salida;
 }
 
-
-
-
 CImg<double> get_magnitud(CImgList<double> & tdf) {
     CImg<double> output = tdf[0];
 
@@ -55,33 +52,59 @@ int main(int argc, char *argv[]) {
     const char* input = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
     const unsigned int _ancho = cimg_option("-w", 21, "Input Image File");
     const unsigned int _alto = cimg_option("-h", 21, "Input Image File");
+    const float _sigma = cimg_option("-s", 2.0, "Input Image File");
 
     CImg<double> img(input), resultado_espacial, resultado_frecuencia;
 
-    utils::genArchivoMascara("filtroej3.txt", _ancho, _alto);
+    //Se genera el filtro y lo cargamos en una imagen
+    utils::genArchivoMascaraGaussiana("filtroej3.txt", _ancho, _alto, _sigma);
     CImg<double> filtro = get_filtro("filtroej3.txt");
 
+    //Convolucionamos en el espacio
     resultado_espacial = img.get_convolve(filtro);
     
-    unsigned int p = (img.width() + filtro.width() -1);
-    unsigned int q = (img.height() + filtro.height() -1);
+    //Calculamos los tamaños del zeropadding
+    unsigned int p = (img.width() + filtro.width() - 1);
+    unsigned int q = (img.height() + filtro.height() - 1);
 
-    //Resizeo para posibilitar la multiplicacion en frecuencia .shift(p/2, q/2)
-    filtro.resize(p, q, -100, -100, 0);
-    img.resize(p, q, -100, -100, 0);
+    //Resizeamos en espacio para posibilitar la multiplicacion en frecuencia 
+    //filtro.resize(p, q, -100, -100, 0);
+    //img.resize(p, q, -100, -100, 0);
 
-    CImgList<double> fft_img = img.get_FFT();
+    //Centramos el filtro
+    //filtro.shift(p/2,q/2);
+
+    //Obtenemos las transformadas de Fourier de la imagen y el filtro
+    CImgList<double> fft_img = img.get_FFT(); 
     CImgList<double> fft_filtro = filtro.get_FFT();
+    
+    //Redimensiona la imagen en frecuencia
+    fft_img[0].resize(p, q, -100, -100, 0);
+    fft_img[1].resize(p, q, -100, -100, 0);
+    //Centra la imagen en frecuencia
+    fft_img[0].shift(p/2,q/2,0,0,2);
+    fft_img[1].shift(p/2,q/2,0,0,2);
 
-    fft_filtro[0].shift(filtro.width()/2, filtro.height()/2,0 ,0 ,2);
-
+    
+    //Redimensiona el filtro en frecuencia
+    fft_filtro[0].resize(p, q, -100, -100, 0);
+    fft_filtro[1].resize(p, q, -100, -100, 0);
+    //Centra el filtro en frecuencia
+    fft_filtro[0].shift(p/2,q/2,0,0,2);
+    fft_filtro[1].shift(p/2,q/2,0,0,2);
+ 
+    
+    //Multiplicamos en frecuencia
     fft_img[0] = fft_img[0] * fft_filtro[0];
-    fft_img[1] = fft_img[1] * fft_filtro[0];
+    fft_img[1] = fft_img[1] * fft_filtro[1];
 
+    
+    //Calculamos la inversa
     resultado_frecuencia = fft_img.get_FFT(true)[0];
 
+    //resultado_frecuencia.shift(-p/2, -q/2, 0, 0, 2).normalize(0,255);
     CImgList<double> lista;
-    lista.assign(img, filtro, get_magnitud(fft_filtro), resultado_espacial,resultado_frecuencia);
+    lista.assign(img, resultado_espacial,resultado_frecuencia);
     lista.display();
 
 
