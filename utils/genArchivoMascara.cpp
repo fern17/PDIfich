@@ -2,7 +2,7 @@
 #include <fstream>
 
 namespace utils {
-
+//Genera una mascara de promediado
 void genArchivoMascara(std::string archivo, unsigned int ancho, unsigned int alto) {
     std::ofstream file(archivo.c_str(), std::ios::trunc);
     file<<alto<<' '<<ancho<<'\n';
@@ -17,6 +17,7 @@ void genArchivoMascara(std::string archivo, unsigned int ancho, unsigned int alt
     file.close();
 }
 
+//genera una mascara gaussiana
 void genArchivoMascaraGaussiana(std::string archivo, unsigned int ancho, unsigned int alto, float sigma) {
     std::ofstream file(archivo.c_str(), std::ios::trunc);
     file<<alto<<' '<<ancho<<'\n';

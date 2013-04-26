@@ -295,27 +295,36 @@ CImg<float> cargar_paleta(const char* filename="../../paletas/gray.pal"){
 /// Magnitud de la TDF transformada logaritmicamente
 ///****************************************
 CImg<double> magn_tdf(CImg<double> image,bool centrada=true,const char* palname="../images/paletas/hot.pal"){
-  CImgList<double> tf=image.get_FFT(false);  // lista con 2 imagenes: parte real e imaginaria
-  CImg<double> preal=tf[0], pimag=tf[1]; // partes separadas
-  int nn=preal.width();
-  int mm=preal.height();
-  CImg<double> magnitud(nn,mm), magnitud_paleta(nn,mm,1,3,0);
-  for (int i=0; i<nn; i++)
-    for (int j=0; j<mm; j++) 
-      magnitud(i,j)=log(sqrt(pow(double(preal(i,j)),2)+pow(double(pimag(i,j)),2.))+0.000001);
+  CImgList<double> tf = image.get_FFT(false);  // lista con 2 imagenes: parte real e imaginaria
+  CImg<double> preal = tf[0], 
+               pimag = tf[1]; // partes separadas
+  int nn = preal.width();
+  int mm = preal.height();
+  CImg<double> magnitud(nn,mm), 
+               magnitud_paleta(nn,mm,1,3,0);
+  for (int i = 0; i < nn; i++)
+    for (int j = 0; j < mm; j++) 
+      magnitud(i,j) = log (sqrt( pow(double(preal(i,j)),2) + 
+                                 pow(double(pimag(i,j)),2.)
+                               ) 
+                                 + 0.000001
+                          );
   magnitud.normalize(0,255);
+  
   if (centrada)
     (magnitud).shift(magnitud.width()/2,magnitud.height()/2,0,0,2); //parametros de scroll:x,y,z,v,border_condition
 
   //DEVUELVE LA TDF CON LA PALETA DESEADA
   CImg<float> paleta=cargar_paleta(palname);
-  for (int i=0; i<nn; i++){
+  
+  for (int i=0; i<nn; i++) {
     for (int j=0; j<mm; j++) {
       magnitud_paleta(i,j,0,0)=255*paleta(0,int(floor(magnitud(i,j))),0,0);
       magnitud_paleta(i,j,0,1)=255*paleta(0,int(floor(magnitud(i,j))),0,1);
       magnitud_paleta(i,j,0,2)=255*paleta(0,int(floor(magnitud(i,j))),0,2);
     }
   }	
+  
   return magnitud_paleta;
 }
 

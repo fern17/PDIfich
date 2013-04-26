@@ -64,79 +64,51 @@ int main(int argc, char *argv[]) {
     resultado_espacial = img.get_convolve(filtro);
     
     //Calculamos los tamaños del zeropadding
+    //unsigned int p = img.width();
+    //unsigned int q = img.height();
     unsigned int p = (img.width() + filtro.width() - 1);
     unsigned int q = (img.height() + filtro.height() - 1);
 
     //Resizeamos en espacio para posibilitar la multiplicacion en frecuencia 
-    //filtro.resize(p, q, -100, -100, 0);
-    //img.resize(p, q, -100, -100, 0);
-
-    //Centramos el filtro
-    //filtro.shift(p/2,q/2);
+    filtro.resize(p, q, -100, -100, 0);
+    img.resize(p, q, -100, -100, 0);
 
     //Obtenemos las transformadas de Fourier de la imagen y el filtro
     CImgList<double> fft_img = img.get_FFT(); 
     CImgList<double> fft_filtro = filtro.get_FFT();
     
-    //Redimensiona la imagen en frecuencia
-    fft_img[0].resize(p, q, -100, -100, 0);
-    fft_img[1].resize(p, q, -100, -100, 0);
-    //Centra la imagen en frecuencia
-    fft_img[0].shift(p/2,q/2,0,0,2);
-    fft_img[1].shift(p/2,q/2,0,0,2);
-
-    
-    //Redimensiona el filtro en frecuencia
-    fft_filtro[0].resize(p, q, -100, -100, 0);
-    fft_filtro[1].resize(p, q, -100, -100, 0);
-    //Centra el filtro en frecuencia
-    fft_filtro[0].shift(p/2,q/2,0,0,2);
-    fft_filtro[1].shift(p/2,q/2,0,0,2);
- 
-    
     //Multiplicamos en frecuencia
-    fft_img[0] = fft_img[0] * fft_filtro[0];
-    fft_img[1] = fft_img[1] * fft_filtro[1];
-
+    CImg<double> tempy_r(img.width(), img.height(), img.depth(), img.spectrum(), 0);
+    CImg<double> tempy_i(img.width(), img.height(), img.depth(), img.spectrum(), 0);
     
+    cimg_forXY(img,x,y) {
+        //Capturamos los valores
+        complex<double> factor1 (fft_img[0](x,y), fft_img[1](x,y)),
+                        factor2 (fft_filtro[0](x,y), fft_filtro[1](x,y));
+
+        //Realizamos el producto de binomios
+        complex<double> prod = factor1*factor2;
+        //Asignamos en real e imaginario
+        tempy_r(x,y) = real(prod);
+        tempy_i(x,y) = imag(prod);
+    }
+    //Juntamos en tempy la parte real e imaginaria
+    CImgList<double> tempy;
+    tempy.assign(tempy_r, tempy_i);
     //Calculamos la inversa
-    resultado_frecuencia = fft_img.get_FFT(true)[0];
+    resultado_frecuencia = tempy.get_FFT(true)[0];
 
-    //resultado_frecuencia.shift(-p/2, -q/2, 0, 0, 2).normalize(0,255);
+    //Ahora realizamos un cropeado para sacar los bordes
+    unsigned int delta_crop_x = ceil(_ancho/2.0); //11 pero para mostrar de donde se saca
+    unsigned int delta_crop_y = ceil(_alto/2.0); //11 pero para mostrar de donde se saca
+
+    //Recorta la basura (resta delta_crop_x o delta_crop_y)
+    resultado_frecuencia.crop(delta_crop_x, delta_crop_y, 
+                            resultado_frecuencia.width()-delta_crop_x, resultado_frecuencia.height() - delta_crop_y);
+
     CImgList<double> lista;
-    lista.assign(img, resultado_espacial,resultado_frecuencia);
+    lista.assign(img, resultado_espacial,resultado_frecuencia.normalize(0,255));
     lista.display();
-
-
-
-
-
-    // CImgList<double> tdf = img.get_FFT();
-    // CImgList<double> tdf2 = img2.get_FFT();
-
-
-    // CImg<double> magnitud = get_magnitud(tdf);
-    // CImg<double> fase = get_fase(tdf2);
-
-    // CImgList<double> resultado(2, img.width(), img.height(), img.depth(), img.spectrum(), 0 );
-
-    
-    // complex<double> I(0,1);
-
-    // cimg_forXY(img, x, y) {
-    //     complex<double> valor = magnitud(x,y) * exp(I * fase(x,y) );
-
-    //     resultado[0](x,y) = real(valor);
-    //     resultado[1](x,y) = imag(valor);
-    // }
-
-    // CImg<double> resultado_i = resultado.get_FFT(true)[0];
-
-    // CImgList<double> lista;
-
-    // lista.assign(img, img2, resultado_i);
-
-    // lista.display();
 
     return 0;
 }
