@@ -1,30 +1,18 @@
 #include <CImg.h>               //include basico de CImg
 #include <iostream>
-#include <cmath>
-#include <string>
 using namespace cimg_library;   //Necesario
 
-
-//Funcion que toma una imagen cualquiera, y un titulo de ventana, y la muestra
-template<typename T>
-void disp(CImg<T> img, std::string title = "titulo") {
-    CImgDisplay ventana(img, title.c_str());   //Crea una ventana y dibuja la imagen...
-    while ( not ventana.is_closed() && not ventana.is_keyQ()) {
-        //bucle infinito
-    }
-}
-
-
-
+//@ Genera una imagen de degradado de 256x256
 void inciso1() {
     CImg<unsigned char> img(256,256);
 
     cimg_forXY(img,x,y) {
         img(x,y) = x;
     }
-    disp(img);
+    img.display("Degradado");
 }
 
+//@ Genera una imagen de degradado de 0 a 100 y luego la normaliza antes de dibujar
 void inciso2() {
     CImg<unsigned char> img(100,100);
 
@@ -33,39 +21,41 @@ void inciso2() {
     }
 
     img.normalize(0,255);
-    disp(img);
+    img.display("Degradado normalizada");
 }
 
+//@ Genera una imagen binaria de rayas verticales alternadas
 void inciso3() {
     CImg<bool> img(100,100);
 
     cimg_forXY(img,x,y) {
-        if (x%2 == 0)
+        if (x % 2 == 0)
             img(x,y) = false;
         else
             img(x,y) = true;
     }
-    disp(img);
+    img.display("Imagen binaria de rayas");
 }
 
+//@ Genera una imagen binaria de ladoxlado con un circulo centrado del radio pasado
 void drawcircle(unsigned int lado, unsigned int radio) {
     CImg<bool> img(lado,lado);
 
     unsigned int centro = lado/2;
 
     cimg_forXY(img,x,y) {
-        if (  (x-centro)*(x-centro) + (y-centro)*(y-centro) <= radio*radio  )
+        if (  (x-centro)*(x-centro) + (y-centro)*(y-centro) <= radio*radio  ) //si esta dentro del circulo
             img(x,y) = true;
         else
             img(x,y) = false;
     }
-    disp(img);
+    img.display("Imagen binaria con circulo en el centro");
 }
 
 
 int main(int argc, char *argv[]) {
     //Imprime información básica de la librería
-    cimg_usage("Utilizacion de la libreria CImg");
+    cimg_usage("Generacion de imagenes varias usando cimg_forXY");
 
     const int ejercicio = cimg_option("-e", 1, "Exercise Number");
 
@@ -77,10 +67,10 @@ int main(int argc, char *argv[]) {
     switch (ejercicio) {
         case 1:
             inciso1();
-        break;
+            break;
         case 2:
             inciso2();
-        break;
+            break;
         case 3:
             inciso3();
         break;

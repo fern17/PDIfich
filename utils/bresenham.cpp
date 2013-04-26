@@ -4,6 +4,8 @@
 #include <iostream>
 namespace utils{
 
+
+//@ Obtiene las coordenadas de bresenham para dado un punto inicial y final, y los tamaños de la imagen. Los devuelve en un vector<vector<uint>>. Codigo robado de internet
 void get_bresenham_coords(  unsigned int H,
 							unsigned int W, 
 							unsigned int x0,
