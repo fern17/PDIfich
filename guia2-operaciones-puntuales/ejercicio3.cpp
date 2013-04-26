@@ -4,10 +4,7 @@
 #include <cassert>
 #include <string>
 #include <vector>
-#include <fstream>
-#include "../utils/getValue.cpp"
 using namespace cimg_library;   //Necesario
-
 
 
 CImg<bool> drawcircle(unsigned int lado, unsigned int radio) {
@@ -24,27 +21,21 @@ CImg<bool> drawcircle(unsigned int lado, unsigned int radio) {
     return img;
 }
 
-
-//Funcion que toma una imagen cualquiera, y un titulo de ventana, y la muestra
-template<typename T>
-void disp(CImg<T> img, std::string title = "titulo") {
-    CImgDisplay ventana(img, title.c_str());   //Crea una ventana y dibuja la imagen...
-    while ( not ventana.is_closed() && not ventana.is_keyQ()) {
-    }
-}
-
+//@ Realiza la Suma punto a punto de una imagen con otra. Divide por la mitad
 CImg<unsigned char> sumarImg(CImg<unsigned char> & img1, CImg<unsigned char> & img2) {
     assert( img1.is_sameXY(img2) );
 
     CImg<unsigned char> salida(img1.width(), img1.height(), 1, 1, 0);
 
     cimg_forXY(img1,x,y) {
+        //Normaliza por el numero de imagenes
         salida(x,y) = ( img1(x,y) + img2(x,y) ) / 2;
     }
 
     return salida;
 }
 
+//@ Realiza la resta punto a punto de una imagen con otra, acotando adecuadamente
 CImg<unsigned char> restarImg(CImg<unsigned char> & img1, CImg<unsigned char> & img2) {
     assert( img1.is_sameXY(img2) );
 
@@ -52,7 +43,9 @@ CImg<unsigned char> restarImg(CImg<unsigned char> & img1, CImg<unsigned char> & 
 
     int temporal;
     cimg_forXY(img1,x,y) {
+        //Resta
         temporal = ( img1(x,y) - img2(x,y) ) / 2;
+        //Acota
         if (temporal < 0) temporal = 0;
         else if (temporal > 255) temporal = 255;
         
@@ -62,12 +55,14 @@ CImg<unsigned char> restarImg(CImg<unsigned char> & img1, CImg<unsigned char> & 
     return salida;
 }
 
-
+//@ Multiplica una imagen por una máscara punto a punto
 CImg<unsigned char> multiplicarImg(CImg<unsigned char> & img1, CImg<bool> & mascara) {
     assert( img1.is_sameXY(mascara) );
 
+    //Creamos la imagen
     CImg<unsigned char> salida(img1.width(), img1.height(), 1, 1, 0);
 
+    //Multiplicamos
     cimg_forXY(img1,x,y) {
         salida(x,y) = ( img1(x,y) * (unsigned int) mascara(x,y) );
     }
@@ -75,6 +70,7 @@ CImg<unsigned char> multiplicarImg(CImg<unsigned char> & img1, CImg<bool> & masc
     return salida;
 }
 
+//@ Multiplica una imagen por la invertida de la mascara que se le pasa por parametro
 CImg<unsigned char> dividirImg(CImg<unsigned char> & img1, CImg<bool> & mascara) {
     assert( img1.is_sameXY(mascara) );
 
@@ -87,30 +83,31 @@ CImg<unsigned char> dividirImg(CImg<unsigned char> & img1, CImg<bool> & mascara)
     return salida;
 }
 
+//@ Toma un conjunto de imagenes y calcula el promedio para sacar el ruido
 CImg<unsigned char> limpiarRuido(std::vector<CImg<unsigned char> > imagenes) {
     unsigned int n = imagenes.size();
     assert(n != 0);
     
     CImg<unsigned char> salida(imagenes[0].width(), imagenes[0].height(), 1, 1, 0);
 
-
     int temporal;   
     for (unsigned int i = 0; i < n; i++) {
         cimg_forXY(imagenes[i],x,y) {
+            //Valor a sumar. Ver que se normaliza por la cantidad de imagenes N
             temporal = salida(x,y) + floor(imagenes[i](x,y) / n);
+            //Acotacion
             if (temporal > 255) temporal = 255;
             else if (temporal < 0 ) temporal = 0; 
             salida(x,y) = temporal;
         }
     }
-
     return salida;
 }
 
 
 int main(int argc, char *argv[]) {
-    //Imprime información básica de la librería
-    cimg_usage("Utilizacion de la libreria CImg");
+    //@ Realiza las operaciones suma, resta, multipicacion (enmascaramiento), divison (enmascaramiento invertido) y reduccion de ruido por promediado
+    cimg_usage("Operaciones aritmeticas entre imagenes");
     
     //Igual Size
     // cameraman.tiff

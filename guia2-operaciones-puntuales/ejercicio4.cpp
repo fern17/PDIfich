@@ -9,30 +9,6 @@
 using namespace cimg_library;   //Necesario
 
 
-
-CImg<bool> drawcircle(unsigned int lado, unsigned int radio) {
-    CImg<bool> img(lado,lado);
-
-    unsigned int centro = lado/2;
-
-    cimg_forXY(img,x,y) {
-        if (  (x-centro)*(x-centro) + (y-centro)*(y-centro) <= radio*radio  )
-            img(x,y) = true;
-        else
-            img(x,y) = false;
-    }
-    return img;
-}
-
-
-//Funcion que toma una imagen cualquiera, y un titulo de ventana, y la muestra
-template<typename T>
-void disp(CImg<T> img, std::string title = "titulo") {
-    CImgDisplay ventana(img, title.c_str());   //Crea una ventana y dibuja la imagen...
-    while ( not ventana.is_closed() && not ventana.is_keyQ()) {
-    }
-}
-
 CImg<unsigned char> sumarImg(CImg<unsigned char> & img1, CImg<unsigned char> & img2) {
     assert( img1.is_sameXY(img2) );
 
@@ -45,33 +21,43 @@ CImg<unsigned char> sumarImg(CImg<unsigned char> & img1, CImg<unsigned char> & i
     return salida;
 }
 
+//@ Aplica el filtro emboss a la imagen con el corrimiento pasado por parametros
+CImg<unsigned char> emboss(CImg<unsigned char> img, int corrimientox = 1, int corrimientoy = 1) {
+
+    CImg<unsigned char> salida;
+    CImg<unsigned char> negativa(img.width(), img.height() , 1 , 1 , 0);
+
+    //Genero la negativa
+    cimg_forXY(img,x,y) {
+        negativa(x,y) = utils::getLinearValue(img(x,y) , 0 , -1 , 255);
+    }
+
+    //Corremos la imagen
+    negativa.shift(corrimientox, corrimientoy);
+
+    //Sumamos ambas imagenes
+    salida = sumarImg(img, negativa);
+
+    return salida;
+}
+
 int main(int argc, char *argv[]) {
-    //Imprime información básica de la librería
-    cimg_usage("Utilizacion de la libreria CImg");
+    //@ Aplica el filtro emboss
+    cimg_usage("Filtro emboss");
 
     const char* input = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
     const int corrimientox = cimg_option("-x", 1, "Corrimiento en X"); // (Pueden ser negativos los corrimientos: ferdi lo dijo)
     const int corrimientoy = cimg_option("-y", 1, "Corrimiento en Y");
 
     CImg<unsigned char> imagen(input);
-    CImg<unsigned char> salida;
-    CImg<unsigned char> negativa(imagen.width(), imagen.height() , 1 , 1 , 0);
+   
+    CImg<unsigned char> salida = emboss(imagen, corrimientox, corrimientoy);
 
-    //Genero la negativa
-    cimg_forXY(imagen,x,y) {
-        negativa(x,y) = utils::getLinearValue(imagen(x,y) , 0 , -1 , 255);
-    }
-
-    //Corrimiento
-    negativa.shift(corrimientox, corrimientoy);
-
-    salida = sumarImg(imagen, negativa);
-
-
+    //Graficamos
     CImgList<unsigned char> lista;
-    lista.assign(imagen, negativa, salida);
+    lista.assign(imagen, salida);
 
-    lista.display();
+    lista.display("Filtro Emboss");
 
     return 0;
 }

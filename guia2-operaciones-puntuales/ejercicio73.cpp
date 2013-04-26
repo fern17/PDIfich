@@ -5,38 +5,8 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include "../utils/getValue.cpp"
 using namespace cimg_library;   //Necesario
 
-
-CImg<unsigned char> imagenMapeo(std::vector<unsigned int> &LUT) {
-    unsigned int ancho = LUT.size();
-    CImg<unsigned char> mapeo(ancho, ancho,1,1,0);
-    for (unsigned int i = 0; i < ancho; i++) {
-        unsigned int valor = LUT[i];
-        mapeo(i, ancho - valor - 1) = 255;
-    }
-    return mapeo;
-}
-
-CImg<unsigned char> aplicarTabla(CImg<unsigned char> img, std::vector<unsigned int> LUT) {
-    CImg<unsigned char> resultado(img.width(), img.height());
-    cimg_forXY(img, x,y) {
-        resultado(x,y) = LUT[img(x,y)];
-    }
-    return resultado;
-}
-
-
-
-std::vector<unsigned int> logarithmicLUT(float c) {
-    std::vector<unsigned int> LUT;
-    LUT.resize(256,0);
-    for (unsigned int i = 0; i < LUT.size(); i++) {
-        LUT[i] = utils::getLogarithmicValue(i, c);
-    }
-    return LUT;
-}
 
 CImg<bool> mascaraRectangular(unsigned int w, unsigned int h,
 							unsigned int x0, unsigned int y0, 
@@ -78,7 +48,7 @@ CImg<unsigned char> aplicarMascara(CImg<unsigned char> & img1, CImg<bool> & masc
     return salida;
 }
 
-std::vector< CImg<bool> > generarMascara(std::string nombre, unsigned int w, unsigned int h) {
+std::vector< CImg<bool> > generarMascaras(std::string nombre, unsigned int w, unsigned int h) {
     std::ifstream f(nombre.c_str());
     if (!f.is_open()) {
         std::cout<<"No se pudo abrir el archivo "<<nombre<<"\n";
@@ -100,8 +70,8 @@ std::vector< CImg<bool> > generarMascara(std::string nombre, unsigned int w, uns
 }
 
 int main(int argc, char *argv[]) {
-    double epsilon = 0.1;
-    cimg_usage("Utilizacion de la libreria CImg");
+    //@ Calcula Error Cuadratico Medio entre dos imagenes enmascaradas para ver si falta una pastilla
+    cimg_usage("Comparacion de MSE entre imagenes enmascaradas para las pastillas");
     
     const char* completo = cimg_option("-r", "../images/blister_completo.jpg", "Input Image File");
     const char* test = cimg_option("-t", "../images/blister_incompleto.jpg", "Input Image File");
@@ -115,7 +85,7 @@ int main(int argc, char *argv[]) {
 
     //Leemos las mascaras y las guardamos en un vector<CImg<bool> >
     std::vector<CImg<bool> > mascaras_bool;
-    mascaras_bool = generarMascara(maskfile, img_completo.width(), img_completo.height() );
+    mascaras_bool = generarMascaras(maskfile, img_completo.width(), img_completo.height() );
 
     unsigned int n = mascaras_bool.size();
 

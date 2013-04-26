@@ -5,39 +5,9 @@
 #include <string>
 #include <vector>
 #include <fstream>
-#include "../utils/getValue.cpp"
 using namespace cimg_library;   //Necesario
 
-
-CImg<unsigned char> imagenMapeo(std::vector<unsigned int> &LUT) {
-    unsigned int ancho = LUT.size();
-    CImg<unsigned char> mapeo(ancho, ancho,1,1,0);
-    for (unsigned int i = 0; i < ancho; i++) {
-        unsigned int valor = LUT[i];
-        mapeo(i, ancho - valor - 1) = 255;
-    }
-    return mapeo;
-}
-
-CImg<unsigned char> aplicarTabla(CImg<unsigned char> img, std::vector<unsigned int> LUT) {
-    CImg<unsigned char> resultado(img.width(), img.height());
-    cimg_forXY(img, x,y) {
-        resultado(x,y) = LUT[img(x,y)];
-    }
-    return resultado;
-}
-
-
-
-std::vector<unsigned int> logarithmicLUT(float c) {
-    std::vector<unsigned int> LUT;
-    LUT.resize(256,0);
-    for (unsigned int i = 0; i < LUT.size(); i++) {
-        LUT[i] = utils::getLogarithmicValue(i, c);
-    }
-    return LUT;
-}
-
+//@ Crea una máscara de tamaño WxH que tiene en blanco sólo un rectangulo entre (x0,y0) y (x1,y1)
 CImg<bool> mascaraRectangular(unsigned int w, unsigned int h,
 							unsigned int x0, unsigned int y0, 
 							unsigned int x1, unsigned int y1) {
@@ -78,7 +48,8 @@ CImg<unsigned char> aplicarMascara(CImg<unsigned char> & img1, CImg<bool> & masc
     return salida;
 }
 
-std::vector< CImg<bool> > generarMascara(std::string nombre, unsigned int w, unsigned int h) {
+//@ Lee desde un archivo las coordenadas de las mascaras y genera un vector de mascaras
+std::vector< CImg<bool> > generarMascaras(std::string nombre, unsigned int w, unsigned int h) {
     std::ifstream f(nombre.c_str());
     if (!f.is_open()) {
         std::cout<<"No se pudo abrir el archivo "<<nombre<<"\n";
@@ -101,7 +72,8 @@ std::vector< CImg<bool> > generarMascara(std::string nombre, unsigned int w, uns
 
 int main(int argc, char *argv[]) {
     double epsilon = 0.1;
-    cimg_usage("Utilizacion de la libreria CImg");
+    //@ Aplicacion de multiples mascaras y votos para decidir entre dos motherboard
+    cimg_usage("Aplicacion de multiples mascaras y votos para decidir entre dos motherboard");
     
     const char* tipo1 = cimg_option("-r", "../images/a7v600-SE.gif", "Input Image File");
     const char* tipo2 = cimg_option("-s", "../images/a7v600-X.gif", "Input Image File");
@@ -115,7 +87,7 @@ int main(int argc, char *argv[]) {
 
     //Leemos las mascaras y las guardamos en un vector<CImg<bool> >
     std::vector<CImg<bool> > mascaras_bool;
-    mascaras_bool = generarMascara(maskfile, img_tipo1.width(), img_tipo1.height() );
+    mascaras_bool = generarMascaras(maskfile, img_tipo1.width(), img_tipo1.height() );
 
     unsigned int n = mascaras_bool.size();
 
@@ -145,5 +117,7 @@ int main(int argc, char *argv[]) {
     std::cout<<"Comparacion con: "<<test;
     std::cout<<"\nTipo 1:\t"<<votos1<<" ("<<tipo1<<")";
     std::cout<<"\nTipo 2:\t"<<votos2<<" ("<<tipo2<<")"<<std::endl;
+
+    return 0;
 
 }
