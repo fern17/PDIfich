@@ -23,7 +23,6 @@ CImg<float> get_filtro(std::string nombre) {
     for (unsigned int i = 0; i < filas; i++) { 
         for (unsigned int j = 0; j < columnas; j++) {
             f>>valor;
-            // std::cerr<<"wololo"<<valor<<"\n";
             salida(j,i) =  valor;
         }
     }
@@ -80,9 +79,9 @@ int main(int argc, char *argv[]) {
         tempy[0](x,y) = real(prod);
         tempy[1](x,y) = imag(prod);
     }
-    fin = time(NULL);
     //Calculamos la inversa
     resultado_frecuencia = tempy.get_FFT(true)[0];
+    fin = time(NULL);
     std::cout<<"El filtrado en frecuencia toma "<<difftime(fin,inicio)<<" segundos \n";
 
     
