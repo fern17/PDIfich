@@ -64,6 +64,7 @@ CImgList<double> filtroGaussiano(unsigned int w, unsigned int h, unsigned int fr
     return img;
 }
 
+//@ Realiza el filtrado en frecuencia a partir de la especificacion de una imagen y el filtro en frecuencia
 CImg<double> filtradoFrecuencia(CImg<double> img, CImgList<double> filtro_frec) {
     
     //Obtenemos las transformadas de Fourier de la imagen y el filtro
