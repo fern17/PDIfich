@@ -2,6 +2,7 @@
 #include <iostream>
 #include <cmath>
 #include <complex>
+#include <ctime>
 #include "../utils/PDI_functions.h"
 #include "../utils/genArchivoMascara.cpp"
 using namespace cimg_library;   //Necesario
@@ -30,24 +31,6 @@ CImg<float> get_filtro(std::string nombre) {
     return salida;
 }
 
-CImg<double> get_magnitud(CImgList<double> & tdf) {
-    CImg<double> output = tdf[0];
-
-    cimg_forXY(output, x ,y ) {
-        output(x,y) = sqrt( pow(tdf[0](x,y),2) + pow(tdf[1](x,y),2) );
-    }
-    return output;
-}
-
-CImg<double> get_fase(CImgList<double> & tdf) {
-    CImg<double> output = tdf[0];
-
-    cimg_forXY(output, x ,y ) {
-        output(x,y) = atan2( tdf[1](x,y) , tdf[0](x,y) );
-    }
-    return output;
-}
-
 int main(int argc, char *argv[]) {
     const char* input = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
     const unsigned int _ancho = cimg_option("-w", 21, "Input Image File");
@@ -60,12 +43,17 @@ int main(int argc, char *argv[]) {
     utils::genArchivoMascaraGaussiana("filtroej3.txt", _ancho, _alto, _sigma);
     CImg<double> filtro = get_filtro("filtroej3.txt");
 
-    //Convolucionamos en el espacio
+    time_t inicio;
+    time_t fin;
+    inicio = time(NULL);
+    //Filtramos en el espacio con convoluciob
     resultado_espacial = img.get_convolve(filtro);
-    
+    fin = time(NULL);
+
+    std::cout<<"El filtrado en espacio toma "<<difftime(fin,inicio)<<" segundos\n";
+    //Ahora nos preparamos para filtrar en frecuencia
+
     //Calculamos los tamaños del zeropadding
-    //unsigned int p = img.width();
-    //unsigned int q = img.height();
     unsigned int p = (img.width() + filtro.width() - 1);
     unsigned int q = (img.height() + filtro.height() - 1);
 
@@ -78,9 +66,9 @@ int main(int argc, char *argv[]) {
     CImgList<double> fft_filtro = filtro.get_FFT();
     
     //Multiplicamos en frecuencia
-    CImg<double> tempy_r(img.width(), img.height(), img.depth(), img.spectrum(), 0);
-    CImg<double> tempy_i(img.width(), img.height(), img.depth(), img.spectrum(), 0);
-    
+    CImgList<double> tempy(2, img.width(), img.height(), img.depth(), img.spectrum(), 0);
+   
+    inicio = time(NULL);
     cimg_forXY(img,x,y) {
         //Capturamos los valores
         complex<double> factor1 (fft_img[0](x,y), fft_img[1](x,y)),
@@ -89,23 +77,25 @@ int main(int argc, char *argv[]) {
         //Realizamos el producto de binomios
         complex<double> prod = factor1*factor2;
         //Asignamos en real e imaginario
-        tempy_r(x,y) = real(prod);
-        tempy_i(x,y) = imag(prod);
+        tempy[0](x,y) = real(prod);
+        tempy[1](x,y) = imag(prod);
     }
-    //Juntamos en tempy la parte real e imaginaria
-    CImgList<double> tempy;
-    tempy.assign(tempy_r, tempy_i);
+    fin = time(NULL);
     //Calculamos la inversa
     resultado_frecuencia = tempy.get_FFT(true)[0];
+    std::cout<<"El filtrado en frecuencia toma "<<difftime(fin,inicio)<<" segundos \n";
 
-    //Ahora realizamos un cropeado para sacar los bordes
-    unsigned int delta_crop_x = ceil(_ancho/2.0); //11 pero para mostrar de donde se saca
-    unsigned int delta_crop_y = ceil(_alto/2.0); //11 pero para mostrar de donde se saca
+    
+    //Ahora realizamos un cropeado para sacar los bordes de mas
+    unsigned int delta_crop_x = floor(_ancho/2.0); 
+    unsigned int delta_crop_y = floor(_alto/2.0); 
 
     //Recorta la basura (resta delta_crop_x o delta_crop_y)
-    resultado_frecuencia.crop(delta_crop_x, delta_crop_y, 
-                            resultado_frecuencia.width()-delta_crop_x, resultado_frecuencia.height() - delta_crop_y);
+    resultado_frecuencia.crop(  delta_crop_x, delta_crop_y, 
+                                resultado_frecuencia.width() - delta_crop_x, 
+                                resultado_frecuencia.height() - delta_crop_y);
 
+    //Dibuja
     CImgList<double> lista;
     lista.assign(img, resultado_espacial,resultado_frecuencia.normalize(0,255));
     lista.display();
