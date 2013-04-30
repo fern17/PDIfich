@@ -4,7 +4,7 @@ namespace utils {
 #include <cmath>
 
 //Devuelve la magnitud de una transformada de Fourier    
-CImg<double> get_magnitud(CImgList<double> & tdf, bool centrado = false) {
+CImg<double> get_magnitud(CImgList<double> tdf, bool centrado = false) {
     CImg<double> output = tdf[0];
 
     cimg_forXY(output, x ,y ) {

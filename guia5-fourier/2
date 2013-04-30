@@ -5,7 +5,6 @@
 #include <ctime>
 #include "../utils/PDI_functions.h"
 #include "../utils/fourier.cpp"
-#include "../utils/genArchivoMascara.cpp"
 using namespace cimg_library;   //Necesario
 
 //@ Genera un filtro ideal con el radio especificado (frecuencia de corte)
@@ -89,32 +88,7 @@ CImg<double> filtradoFrecuencia(CImg<double> img, CImgList<double> filtro_frec) 
     //Calculamos la inversa
     return tempy.get_FFT(true)[0];
 }
- 
-void filtradoFrecuenciaGaussiano(CImg<double> img, CImgList<double> filtro_frec, CImg<double> & resultado_espacio, CImgList<double> & resultado_frec) {
-    
-    //Obtenemos las transformadas de Fourier de la imagen y el filtro
-    CImgList<double> fft_img = img.get_FFT(); 
-    
-    //Multiplicamos en frecuencia
-    CImgList<double> tempy(2, img.width(), img.height(), img.depth(), img.spectrum(), 0);
    
-    cimg_forXY(img,x,y) {
-        //Capturamos los valores
-        complex<double> factor1 (fft_img[0](x,y), fft_img[1](x,y)),
-                        factor2 (filtro_frec[0](x,y), filtro_frec[1](x,y));
-
-        //Realizamos el producto de binomios
-        complex<double> prod = factor1*factor2;
-        //Asignamos en real e imaginario
-        tempy[0](x,y) = real(prod);
-        tempy[1](x,y) = imag(prod);
-    }
-    //Copiamos los resultados
-    resultado_frec = tempy;
-    
-    resultado_espacio = tempy.get_FFT(true)[0];
-}
-  
 CImg<double> get_filtro(std::string nombre) {
     std::ifstream f(nombre.c_str());
     if (!f.is_open()) {
@@ -150,8 +124,7 @@ int main(int argc, char *argv[]) {
     const unsigned int _alto = cimg_option("-h", 11, "alto del filtro gaussiano");
 
     CImg<double> img(input), resultado_ideal_pb, resultado_butterworth_pb, resultado_gaussiano_pb;
-    CImg<double> resultado_ideal_pa, resultado_butterworth_pa, resultado_gaussiano_pa, resultado_gaussiano_espacio;
-    CImgList<double> resultado_gaussiano_frec;
+    CImg<double> resultado_ideal_pa, resultado_butterworth_pa, resultado_gaussiano_pa;
 
     unsigned int w = img.width();
     unsigned int h = img.height();
@@ -165,38 +138,30 @@ int main(int argc, char *argv[]) {
     utils::genArchivoMascaraGaussiana(archivo_filtro, _ancho, _alto, _frec_corte);
     //Lo leemos
     CImg<double> filtro_gaussiano_espacio = get_filtro(archivo_filtro);
-   
-    unsigned int p = w + filtro_gaussiano_espacio.width() - 1;
-    unsigned int q = h + filtro_gaussiano_espacio.height() - 1;
-
-    //Redimensionamos el filtro
-    filtro_gaussiano_espacio.resize(p, q, -100, -100, 0);
 
     //Transformamos el filtro a frecuencia
     CImgList<double> filtro_gaussiano_espacio_fft = filtro_gaussiano_espacio.get_FFT();
 
-    //Filtramos con el filtro gaussiano definido en espacio
-    filtradoFrecuenciaGaussiano(img.get_resize(p, q, -100, -100, 0), filtro_gaussiano_espacio_fft, resultado_gaussiano_espacio, resultado_gaussiano_frec);
-    resultado_gaussiano_espacio.crop(_ancho/2, _alto/2, p - _ancho/2, q - _alto/2);
+    //Redimensionamos el filtro
+    filtro_gaussiano_espacio_fft.resize(w,h, -100, -100, 0);
 
-    //Calculamos todos los resultados en frecuencia
+    //Filtramos con el filtro gaussiano definido en espacio
+    resultado_gaussiano_espacio = filtradoFrecuencia(img, filtro_gaussiano_espacio_fft);
+
+
+    //Calculamos todos los resultados
     resultado_ideal_pb = filtradoFrecuencia(img, filtro_ideal_pb);
     resultado_butterworth_pb = filtradoFrecuencia(img, filtro_butterworth_pb);
     resultado_gaussiano_pb = filtradoFrecuencia(img, filtro_gaussiano_pb);
-
-    CImgList<double> lista_gauss;
-    lista_gauss.assign(img,  utils::get_magnitud(resultado_gaussiano_frec, true), 
-                      resultado_gaussiano_espacio);
-    lista_gauss.display("Original|GaussianoEspacio(frec)|ResultadoGaussianoEspacio");
 
     //Dibuja
     CImgList<double> lista_pb;
     lista_pb.assign(img, utils::get_magnitud(filtro_ideal_pb), resultado_ideal_pb,
                       utils::get_magnitud(filtro_butterworth_pb), resultado_butterworth_pb,
                       utils::get_magnitud(filtro_gaussiano_pb), resultado_gaussiano_pb);
-    lista_pb.display("Original|Ideal(frec)|ResultadoIdeal|Butterworth(frec)|ResultadoButterworth|GaussianoFrec(frec)|ResultadoGaussianoFrec");
+    lista_pb.display();
 
-    /*
+
     //Filtrado pasa altos
     CImgList<double> filtro_ideal_pa = filtroIdeal(w, h, _frec_corte, true);
     CImgList<double> filtro_butterworth_pa = filtroButterworth(w, h, _frec_corte, _orden_butterworth, true);
@@ -213,6 +178,6 @@ int main(int argc, char *argv[]) {
                       utils::get_magnitud(filtro_butterworth_pa), resultado_butterworth_pa,
                       utils::get_magnitud(filtro_gaussiano_pa), resultado_gaussiano_pa);
     lista_pa.display();
-    */
+
     return 0;
 }
