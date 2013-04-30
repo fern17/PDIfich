@@ -61,7 +61,7 @@ int main(int argc, char *argv[]) {
     CImgList<double> lista;
     lista.assign(   img, 
                     utils::get_magnitud(filtro_homomorfico, true), 
-                    resultado_exp);
+                    resultado_exp, img.get_equalize(256));
     lista.display();
 
     return 0;
