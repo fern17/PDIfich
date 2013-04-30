@@ -28,7 +28,7 @@ CImgList<double> filtroIdeal(unsigned int w, unsigned int h, unsigned int radio,
         }
     }
 
-    img[0].shift(-w/2, -h/2,0,0,2);
+    img[0].shift(w/2, h/2,0,0,2);
     return img;
 }
 
@@ -46,7 +46,7 @@ CImgList<double> filtroButterworth(unsigned int w, unsigned int h, unsigned int 
         else img[0](x,y) =           (1)/(1 + pow((distancia/float(frec_corte)), 2*orden));
     }
 
-    img[0].shift(-w/2, -h/2,0,0,2);
+    img[0].shift(w/2, h/2,0,0,2);
     return img;
 }
 
@@ -63,7 +63,7 @@ CImgList<double> filtroGaussiano(unsigned int w, unsigned int h, unsigned int fr
         else           img[0](x,y) = exp(-pow(distancia,2)/(2*(pow(frec_corte,2))));
     }
 
-    img[0].shift(-w/2, -h/2,0,0,2);
+    img[0].shift(w/2, h/2,0,0,2);
     return img;
 }
 
@@ -144,14 +144,18 @@ CImg<double> get_filtro(std::string nombre) {
 int main(int argc, char *argv[]) {
     const char* input = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
     const char* archivo_filtro = cimg_option("-a", "filtro_gaussiano_espacio.txt", "Archivo del filtro gaussiano");
-    const unsigned int _frec_corte = cimg_option("-f", 50, "Input Image File");
-    const unsigned int _orden_butterworth = cimg_option("-b", 2, "Input Image File");
+    const unsigned int _frec_corte = cimg_option("-f", 150, "Input Image File");
+    const unsigned int _orden_butterworth = cimg_option("-b", 1, "Input Image File");
     const unsigned int _ancho = cimg_option("-w", 11, "ancho del filtro gaussiano");
-    const unsigned int _alto = cimg_option("-h", 11, "alto del filtro gaussiano");
+    const unsigned int _alto = cimg_option("-e", 11, "alto del filtro gaussiano");
+    const float ruido = cimg_option("-r", 1, "varianza del ruido");
 
     CImg<double> img(input), resultado_ideal_pb, resultado_butterworth_pb, resultado_gaussiano_pb;
     CImg<double> resultado_ideal_pa, resultado_butterworth_pa, resultado_gaussiano_pa, resultado_gaussiano_espacio;
     CImgList<double> resultado_gaussiano_frec;
+
+    //Agregamos ruido
+    img.noise(ruido);
 
     unsigned int w = img.width();
     unsigned int h = img.height();
@@ -187,13 +191,19 @@ int main(int argc, char *argv[]) {
     CImgList<double> lista_gauss;
     lista_gauss.assign(img,  utils::get_magnitud(resultado_gaussiano_frec, true), 
                       resultado_gaussiano_espacio);
-    lista_gauss.display("Original|GaussianoEspacio(frec)|ResultadoGaussianoEspacio");
+    //lista_gauss.display("Original|GaussianoEspacio(frec)|ResultadoGaussianoEspacio");
 
     //Dibuja
     CImgList<double> lista_pb;
-    lista_pb.assign(img, utils::get_magnitud(filtro_ideal_pb), resultado_ideal_pb,
-                      utils::get_magnitud(filtro_butterworth_pb), resultado_butterworth_pb,
-                      utils::get_magnitud(filtro_gaussiano_pb), resultado_gaussiano_pb);
+    lista_pb.assign(img, 
+                     //utils::get_magnitud(filtro_ideal_pb), 
+                        resultado_ideal_pb,
+                      //utils::get_magnitud(filtro_butterworth_pb), 
+                      resultado_butterworth_pb,
+                      //utils::get_magnitud(filtro_gaussiano_pb), 
+                      //resultado_gaussiano_pb);
+                      resultado_gaussiano_pb,
+                      resultado_gaussiano_espacio);
     lista_pb.display("Original|Ideal(frec)|ResultadoIdeal|Butterworth(frec)|ResultadoButterworth|GaussianoFrec(frec)|ResultadoGaussianoFrec");
 
     /*
