@@ -42,6 +42,7 @@ int main(int argc, char *argv[]) {
     //Obtenemos un filtro gaussiano pasa altos
     CImgList<double> filtro_homomorfico = filtroHomomorfico(w, h,_frec_corte, gamma_l, gamma_h, c);
 
+
     //Calculamos el logaritmo de la imagen 
     CImg<double> log_img(w, h, 1, 1, 0);
 
@@ -58,10 +59,16 @@ int main(int argc, char *argv[]) {
     //Exponenciamos
     CImg<double> resultado_exp = resultado_filtrado.get_exp();
 
+    //Aplicamos el filtro a la imagen ecualizada
+    CImg<double> equ = log_img;
+    equ.equalize(256);
+    CImg<double> resultado_filtrado_equ = utils::filtradoFrecuencia(equ, filtro_homomorfico);
+    resultado_filtrado_equ.exp();
+
     CImgList<double> lista;
     lista.assign(   img, 
                     utils::get_magnitud(filtro_homomorfico, true), 
-                    resultado_exp, img.get_equalize(256));
+                    resultado_exp, img.get_equalize(256), abs(resultado_exp - img).equalize(0,255), resultado_filtrado_equ);
     lista.display();
 
     return 0;
