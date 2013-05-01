@@ -28,8 +28,8 @@ CImgList<double> filtroHomomorfico(unsigned int w, unsigned int h, unsigned int 
 int main(int argc, char *argv[]) {
     const char* input = cimg_option("-i", "../images/casilla.tif", "Input Image File");
     const unsigned int _frec_corte = cimg_option("-f", 150, "Input Image File");
-    const float gamma_l = cimg_option("-b", 0.5, "Efecto en bajas frecuencias");
-    const float gamma_h = cimg_option("-a", 2.0, "Efecto en altas frecuencias");
+    const float gamma_l = cimg_option("-b", 0.9, "Efecto en bajas frecuencias");
+    const float gamma_h = cimg_option("-a", 1.1, "Efecto en altas frecuencias");
     const float c = cimg_option("-c", 1, "Constante de sharpness");
     std::cout<<"Parametros seleccionados: \n  * frec_corte = "<<_frec_corte<<
         "\n  * gamma_l = "<<gamma_l<<"\n  * gamma_h = "<<gamma_h<<"\n  * c = "<<c<<'\n';
@@ -59,17 +59,24 @@ int main(int argc, char *argv[]) {
     //Exponenciamos
     CImg<double> resultado_exp = resultado_filtrado.get_exp();
 
+    //Ahora probaremos con ecualizacion:
+    //Imagen -> Ecualizacion -> Filtrado
+
     //Aplicamos el filtro a la imagen ecualizada
     CImg<double> equ = log_img;
     equ.equalize(256);
-    CImg<double> resultado_filtrado_equ = utils::filtradoFrecuencia(equ, filtro_homomorfico);
-    resultado_filtrado_equ.exp();
+    CImg<double> resultado_equ_filtrado = utils::filtradoFrecuencia(equ, filtro_homomorfico);
+    resultado_equ_filtrado.exp();
+
+    //Imagen -> Filtrado -> Ecualizacion
+    //Ecualizamos la imagen filtrada
+    CImg<double> resultado_filtrado_equ = resultado_exp.get_equalize(256);
 
     CImgList<double> lista;
     lista.assign(   img, 
                     utils::get_magnitud(filtro_homomorfico, true), 
-                    resultado_exp, img.get_equalize(256), abs(resultado_exp - img).equalize(0,255), resultado_filtrado_equ);
-    lista.display();
+                    img.get_equalize(256), resultado_exp, resultado_equ_filtrado, resultado_filtrado_equ);
+    lista.display("Original|Filtro|EcualizacionDeOriginal|Resultado|EcualizacionMasFiltrado|FiltradoMasEcualizacion");
 
     return 0;
 }

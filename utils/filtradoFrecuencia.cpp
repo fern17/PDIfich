@@ -12,7 +12,7 @@ CImgList<double> filtroIdeal(unsigned int w, unsigned int h, unsigned int radio,
     //Si es pasa altos, tenemos que iniciarla con 1, no con 0
     if (pasaaltos) {
         img[0].fill(1);
-        img[1].fill(1);
+        //img[1].fill(1); //La parte imaginaria se queda en 0 igual
     }
 
     unsigned int centro_x = w/2;
