@@ -15,7 +15,7 @@ CImgList<double> filtroIdeal(unsigned int w, unsigned int h, unsigned int radio,
     //Si es pasa altos, tenemos que iniciarla con 1, no con 0
     if (pasaaltos) {
         img[0].fill(1);
-        img[1].fill(1);
+        //img[1].fill(1); //la parte imaginaria se queda en 0 igual
     }
 
     unsigned int centro_x = w/2;
@@ -204,7 +204,7 @@ int main(int argc, char *argv[]) {
                       //resultado_gaussiano_pb);
                       resultado_gaussiano_pb,
                       resultado_gaussiano_espacio);
-    lista_pb.display("Original|Ideal(frec)|ResultadoIdeal|Butterworth(frec)|ResultadoButterworth|GaussianoFrec(frec)|ResultadoGaussianoFrec");
+    lista_pb.display("Original|ResultadoIdeal|ResultadoButterworth||ResultadoGaussianoFrec|ResultadoGaussianoEspacio");
 
     /*
     //Filtrado pasa altos
