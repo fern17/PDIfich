@@ -25,6 +25,11 @@ CImgList<double> filtroHomomorfico(unsigned int w, unsigned int h, unsigned int 
     return img;
 }
 
+CImg<double> colorToBW(CImg<double> img) {
+    if (img.spectrum() == 1) return img;
+    else return img.get_RGBtoHSI().get_channel(2);
+}
+
 int main(int argc, char *argv[]) {
     const char* input = cimg_option("-i", "../images/casilla.tif", "Input Image File");
     const unsigned int _frec_corte = cimg_option("-f", 150, "Input Image File");
@@ -33,8 +38,11 @@ int main(int argc, char *argv[]) {
     const float c = cimg_option("-c", 1, "Constante de sharpness");
     std::cout<<"Parametros seleccionados: \n  * frec_corte = "<<_frec_corte<<
         "\n  * gamma_l = "<<gamma_l<<"\n  * gamma_h = "<<gamma_h<<"\n  * c = "<<c<<'\n';
-   
+  
+    
+
     CImg<double> img(input);
+    img = colorToBW(img).get_normalize(0,255);
     //img.normalize(0,255);
     unsigned int w = img.width();
     unsigned int h = img.height();
