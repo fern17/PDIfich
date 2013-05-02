@@ -15,10 +15,13 @@ CImgList<double> filtroHomomorfico(unsigned int w, unsigned int h, unsigned int 
 
     unsigned int centro_x = w/2;
     unsigned int centro_y = h/2;
+    unsigned int fcp = pow(frec_corte,2);
     
     cimg_forXY(img[0],x,y) {
-        double distancia = sqrt( (x - centro_x)*(x - centro_x) + (y - centro_y)*(y - centro_y)); 
-        img[0](x,y) = (gamma_h - gamma_l) * (1 - exp (-c * pow(distancia,2) / (pow(frec_corte,2)))) + gamma_l;
+        double distancia = ( (x - centro_x)*(x - centro_x) + (y - centro_y)*(y - centro_y));
+        double argumento = -c * distancia/fcp;
+        
+        img[0](x,y) = (gamma_h - gamma_l) * (1 - exp (argumento)) + gamma_l;
     }
 
     img[0].shift(w/2, h/2,0,0,2);
@@ -65,7 +68,7 @@ int main(int argc, char *argv[]) {
     CImg<double> resultado_filtrado = utils::filtradoFrecuencia(log_img, filtro_homomorfico);
 
     //Exponenciamos
-    CImg<double> resultado_exp = resultado_filtrado.get_exp();
+    CImg<double> resultado_exp = resultado_filtrado.get_normalize(0,1).get_exp().get_normalize(0,255);
 
     //Ahora probaremos con ecualizacion:
     //Imagen -> Ecualizacion -> Filtrado
