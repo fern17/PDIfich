@@ -1,13 +1,13 @@
 #include <CImg.h>               //include basico de CImg
 #include <iostream>
-#include <cmath>
-#include <cassert>
 #include <string>
 #include <vector>
 #include <fstream>
 using namespace cimg_library;   //Necesario
+using namespace std;
 
-
+//@ Lee un archivo con las coordenadas de los parches a obtener la imagen parametro.
+//  Devuelve un vector con imagenes que son los parches de la imagen original
 std::vector< CImg<unsigned char> > get_parches(std::string nombre, CImg<unsigned char> imagen) {
     std::ifstream f(nombre.c_str());
     if (!f.is_open()) {
@@ -29,7 +29,6 @@ std::vector< CImg<unsigned char> > get_parches(std::string nombre, CImg<unsigned
     return salida;
 }
 
-using namespace std;
 
 int main(int argc, char *argv[]) {
     //@ Identificar de ruido a partir de histograma, leer desde archivo separado por espacios
@@ -50,11 +49,9 @@ int main(int argc, char *argv[]) {
     unsigned int n = imagenes.size();
 
     for (unsigned int i = 0; i < n; i++) {
-
-        vector<CImg<unsigned char> > parches;
-        
         cout<<"Procesando imagen: "<<i+1<<endl;
         
+        vector<CImg<unsigned char> > parches;
         parches = get_parches("parches_ruido.txt", imagenes[i]);
 
         unsigned int m = parches.size();
@@ -62,11 +59,8 @@ int main(int argc, char *argv[]) {
             cout<<"\tProcesando parche: "<<j+1;
             cout<<"\tMedia: "<<parches[j].mean()<<"\tVarianza: "<<parches[j].variance()<<endl;
             parches[j].get_histogram(256).display_graph(0,3);
-
         }
-
     }
-
 }
 
 

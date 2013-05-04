@@ -72,8 +72,6 @@ int main(int argc, char *argv[]) {
     const float _gamma = cimg_option("-g", 0.5, "Input filter File");
     const float _scalar = cimg_option("-e", 1.2, "Input filter File");
 
-    std::cout<<"EscalarrrrrrrrrrrrrrrrrrrrrrrrrrrrrrRRRRRR "<<_scalar<<"\n";
-
     CImg<unsigned char> img(_input), img_equ, img_log, img_pot,filtrada_prom(img.width(), img.height(), 1, 1, 0), 
                         filtrada_acen(img.width(), img.height(), 1, 1, 0), filtrada_hb, output, output2, tempy;
 
