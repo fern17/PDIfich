@@ -43,15 +43,21 @@ double mediaContraArmonica(std::vector<T> vecindario, double Q) {
     double suma_arriba = 0.0;
     double suma_abajo = 0.0;
     for (unsigned int ii = 0; ii < vecindario.size(); ii++) {
-        if (Q != -1)
+        //if (Q != -1)
             suma_arriba += pow(vecindario[ii], Q+1);
-        if (Q != 0)
+        //if (Q != 0)
             suma_abajo  += pow(vecindario[ii], Q);
     }
+    std::cout<<"arriba = "<<suma_arriba<<'\n';
+    std::cout<<"abajo = "<<suma_abajo<<'\n';
     suma_arriba /= (float) vecindario.size();
     suma_abajo  /= (float) vecindario.size();
 
-    return suma_arriba/suma_abajo;
+    double resultado = suma_arriba;
+    if (fabs(suma_abajo) > 0.01)
+        resultado /= suma_abajo;
+    std::cout<<"resultado = "<<resultado<<'\n';
+    return resultado;
 }
 
 template<typename T>
@@ -100,7 +106,7 @@ int main(int argc, char *argv[]) {
 
     //Cargamos la imagen
     CImg<double> img (input);
-    img.crop(0,0,50,20);
+    img.crop(0,0,8,4);
     img = img.RGBtoHSI().channel(2);
     //Aplicamos ruido
     CImg<double> img_ruidosa = img.get_noise(desvio_impulsivo, 2);
