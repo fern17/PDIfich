@@ -5,11 +5,10 @@
 using namespace cimg_library;   //Necesario
 
 //Helper que te dice si un valor se va de rosca
-template<typename T>
-bool fueraDeRango(CImg<T> img, int x, int y, int w, int h) {
-    if (y < 0 or y > w) 
+bool fueraDeRango(int x, int y, int w, int h) {
+    if (y < 0 or y > h) 
         return true;
-    if (x < 0 or x > h)
+    if (x < 0 or x > w)
         return true;
     return false;
 }
@@ -18,13 +17,12 @@ bool fueraDeRango(CImg<T> img, int x, int y, int w, int h) {
 template<typename T>
 //@ Devuelve el vecindario centrado en x0,y0 y de tamanio step_x*2 x step_y*2...
 std::vector<double> obtenerVecindario(CImg<T> &img, unsigned int x0, unsigned int y0, unsigned int w, unsigned int h, unsigned int step_x, unsigned int step_y) {
-    
     std::vector<double> ret_val; //Devuelve el vector de los pixeles del vecindario 
 
-    for (int i = y0 - step_y; i <= y0 + step_y; i++) {        //Here be dragons... 
-        for (int j = x0 - step_x; j <= x0 + step_x; j++) {    //aca tambien hay dragones, rojos
-            if (not fueraDeRango(img, j, i, w, h)) 
-                ret_val.push_back(img(j,i));
+    for (int i = x0 - step_x; i <= x0 + step_x; i++) {        //Here be dragons... 
+        for (int j = y0 - step_y; j <= y0 + step_y; j++) {    //aca tambien hay dragones, rojos
+            if (not fueraDeRango(i, j, w, h))                   
+                ret_val.push_back(img(i,j));
         }
     }
     return ret_val; 
@@ -79,15 +77,15 @@ CImg<T> filtradoMedias(CImg<T> img, unsigned int tipo = 0, unsigned int ancho = 
     for (unsigned int i = 0; i < img.width(); i++) {
         for (unsigned int j = 0; j < img.height(); j++) {
             std::cout<<"iteracion "<<i<<" "<<j<<"\n";
-            std::vector<T> vecindario = obtenerVecindario(img, j, i, w, h, step_x, step_y);
+            std::vector<T> vecindario = obtenerVecindario(img, i, j, w, h, step_x, step_y);
             if (tipo == 0)
-                ret_val(j,i) = mediaAritmetica(vecindario);
+                ret_val(i,j) = mediaAritmetica(vecindario);
             if (tipo == 1)
-                ret_val(j,i) = mediaGeometrica(vecindario);
+                ret_val(i,j) = mediaGeometrica(vecindario);
             if (tipo == 2)
-                ret_val(j,i) = mediaArmonica(vecindario);
+                ret_val(i,j) = mediaArmonica(vecindario);
             if (tipo == 3)
-                ret_val(j,i) = mediaContraArmonica(vecindario, Q);
+                ret_val(i,j) = mediaContraArmonica(vecindario, Q);
         }
     }
     return ret_val;
@@ -102,6 +100,7 @@ int main(int argc, char *argv[]) {
 
     //Cargamos la imagen
     CImg<double> img (input);
+    img.crop(0,0,50,20);
     img = img.RGBtoHSI().channel(2);
     //Aplicamos ruido
     CImg<double> img_ruidosa = img.get_noise(desvio_impulsivo, 2);
@@ -110,12 +109,16 @@ int main(int argc, char *argv[]) {
     //Aplicamos los filtros
     std::cerr<<"wololo1\n";
     CImg<double> resultado_geometrica = filtradoMedias(img_ruidosa, 1, ancho, alto).normalize(0,255);
+    resultado_geometrica.save("resultado_geometrica.jpg");
     std::cerr<<"wololo2\n";
     CImg<double> resultado_contraarmonica = filtradoMedias(img_ruidosa, 3, ancho, alto, Q).normalize(0,255);
+    resultado_contraarmonica.save("resultado_contraarmonica.jpg");
     std::cerr<<"wololo3\n";
     CImg<double> resultado_armonica = filtradoMedias(img_ruidosa, 2, ancho, alto).normalize(0,255);
+    resultado_armonica.save("resultado_armonica.jpg");
     std::cerr<<"wololo4\n";
     CImg<double> resultado_aritmetica = filtradoMedias(img_ruidosa, 0, ancho, alto).normalize(0,255);
+    resultado_aritmetica.save("resultado_artimetica.jpg");
     std::cerr<<"wololo5\n";
 
     (img, img_ruidosa, resultado_geometrica, resultado_contraarmonica, resultado_armonica, resultado_aritmetica).display();
