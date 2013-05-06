@@ -7,7 +7,7 @@
 #include <fstream>
 using namespace cimg_library;   //Necesario
 
-
+//@ Lee los parches donde aplicar la ecualizacion
 std::vector< CImg<unsigned char> > get_parches(std::string nombre, CImg<unsigned char> imagen, std::vector<std::vector<unsigned int> > &coordenadas) {
     std::ifstream f(nombre.c_str());
     if (!f.is_open()) {
@@ -42,7 +42,7 @@ std::vector< CImg<unsigned char> > get_parches(std::string nombre, CImg<unsigned
 using namespace std;
 
 int main(int argc, char *argv[]) {
-    //@ Identificar de ruido a partir de histograma, leer desde archivo separado por espacios
+    //@ Encontrar cosas oscuras mediante ecualizacion de histograma 
 
     const char* _inputA = "../images/cuadros.tif";
 
@@ -53,24 +53,27 @@ int main(int argc, char *argv[]) {
     std::vector<std::vector<unsigned int> > coordenadas;
     std::vector<CImg<unsigned char> > parches;
 
+    //Lee los parches donde aplicar la ecualizacion
     parches = get_parches("mascaras_ej72.txt", input, coordenadas);
 
     unsigned int n = coordenadas.size();
 
     for (unsigned int i = 0; i < n; i++) {
+        //Ecualiza el parche
         parches[i].equalize(256);
-        for (unsigned int j=coordenadas[i][0], x=0; j <  coordenadas[i][2]; j++, x++ ) {
-            for (unsigned int k=coordenadas[i][1], y=0; k <  coordenadas[i][3]; k++, y++ ) {
+        //Reemplaza los valores del parche
+        for (unsigned int j=coordenadas[i][0], x = 0; j <  coordenadas[i][2]; j++, x++ ) {
+            for (unsigned int k=coordenadas[i][1], y = 0; k <  coordenadas[i][3]; k++, y++ ) {
                 output(j,k) =  parches[i](x,y);
             }
         }
 
     }
 
+    //Dibuja
     CImgList<unsigned char> lista;
     lista.assign(input, output);
     lista.display();
-
 }
 
 

@@ -1,10 +1,4 @@
 #include <CImg.h>               //include basico de CImg
-#include <iostream>
-#include <cmath>
-#include <cassert>
-#include <string>
-#include <vector>
-#include <fstream>
 using namespace cimg_library;   //Necesario
 
 

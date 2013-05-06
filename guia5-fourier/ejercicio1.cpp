@@ -71,10 +71,8 @@ void inciso3() {
     CImg<double> fm_circulo = magn_tdf(circulo, true); 
 
     CImgList<double> lista_fft;
-    lista_fft.assign(fm_linea_vertical, fm_linea_horizontal, fm_cuadrado, fm_rectangulo, fm_circulo);
+    lista_fft.assign(fm_linea_vertical, magn_tdf(linea_horizontal, false), fm_linea_horizontal, fm_cuadrado, fm_rectangulo, fm_circulo);
     lista_fft.display();
-
-
 }
 
 void inciso4() {
@@ -110,8 +108,8 @@ void inciso5(const char *input) {
 int main(int argc, char *argv[]) {
 
 	const char* input = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
-    //inciso3();
+    inciso3();
     //inciso4();
-    inciso5(input);
+    //inciso5(input);
     return 0;
 }
