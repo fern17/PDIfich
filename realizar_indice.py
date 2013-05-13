@@ -17,6 +17,7 @@ def walk(pathname, fout):
         else:
             walk(path, fout)
 
+walk('.')
 fout = open('indice.txt','w')
 walk('.', fout)
 fout.close()

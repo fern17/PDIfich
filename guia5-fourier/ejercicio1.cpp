@@ -50,9 +50,9 @@ void inciso3() {
 
     CImg<double> linea_vertical = lineaVertical(w,h,w/2).get_normalize(0,255);
     CImg<double> linea_horizontal = lineaHorizontal(w,h,h/2).get_normalize(0,255);
-    CImg<double> cuadrado = rectCentrado(w,h,w/4,h/4).get_normalize(0,255);
+    CImg<double> cuadrado = rectCentrado(w,h,w/40,h/4).get_normalize(0,255);
     CImg<double> rectangulo = rectCentrado(w,h,w/2,h/10).get_normalize(0,255);
-    CImg<double> circulo = circuloCentrado(w,w/1.8).get_normalize(0,255);
+    CImg<double> circulo = circuloCentrado(w,0).get_normalize(0,255);
 
     CImgList<double> lista;
     lista.assign(linea_vertical,linea_horizontal,cuadrado,rectangulo,circulo);
@@ -71,7 +71,7 @@ void inciso3() {
     CImg<double> fm_circulo = magn_tdf(circulo, true); 
 
     CImgList<double> lista_fft;
-    lista_fft.assign(fm_linea_vertical, magn_tdf(linea_horizontal, false), fm_linea_horizontal, fm_cuadrado, fm_rectangulo, fm_circulo);
+    lista_fft.assign(fm_linea_vertical,  fm_linea_horizontal, fm_cuadrado, fm_rectangulo, fm_circulo);
     lista_fft.display();
 }
 
