@@ -14,4 +14,4 @@ def walk(pathname):
         else:
             walk(path)
 
-walk('/home/ferdinando/PDIfich')
+walk('.')
