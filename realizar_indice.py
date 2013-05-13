@@ -1,5 +1,5 @@
 import os
-def walk(pathname):
+def walk(pathname, fout):
     for name in os.listdir(pathname):
         path = os.path.join(pathname, name)
         if os.path.isfile(path):
@@ -8,10 +8,16 @@ def walk(pathname):
                 for line in fin:
                     pos = line.find('//@')
                     if pos != -1:
-                        print '#' * 10, path, '#' * 10
+                        header = '#' * 10 + path + '#' * 10 + '\n'
                         text = line[pos:]
+                        fout.write(header)
+                        fout.write(text)
+                        print header
                         print text
         else:
-            walk(path)
+            walk(path, fout)
 
 walk('.')
+fout = open('indice.txt','w')
+walk('.', fout)
+fout.close()
