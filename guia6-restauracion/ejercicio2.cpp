@@ -200,6 +200,14 @@ int main(int argc, char *argv[]) {
     CImg<double> r_armonica = cambiarIntesidad(img_original, resultado_armonica);
     CImg<double> r_aritmetica = cambiarIntesidad(img_original, resultado_aritmetica);
 
+    std::cout<<"\nErrores:\n";
+    std::cout<<"\nImagen ruidosa = "<<img_ruidosa.MSE(img);
+    std::cout<<"\nGeometrica = "<<resultado_geometrica.MSE(img);
+    std::cout<<"\nContra Armonica = "<<resultado_contraarmonica.MSE(img);
+    std::cout<<"\nArmonica = "<<resultado_armonica.MSE(img);
+    std::cout<<"\nAritmetica = "<<resultado_aritmetica.MSE(img);
+    std::cerr<<"\n";
+
     (img_original, img_ruidosa, r_geometrica, r_contraarmonica, r_armonica, r_aritmetica).display();
     return 0;
 }
