@@ -23,6 +23,8 @@ CImg<double> mascaraNotch(CImg<double> &img, std::vector<std::pair<unsigned int,
     return ret_val;
 }
 
+
+//@ Genera una máscara con un filtro rechazabanda entre las frecuencias f0 y ff
 CImg<double> mascaraRechazaBanda(CImg<double> &img, unsigned int f0, unsigned int ff ) {
     CImg<double> ret_val(img.width(), img.height(), 1,1,1);
 
