@@ -73,16 +73,18 @@ int main(int argc, char *argv[]) {
     unsigned int h = img.height();
     CImgList<double> f_img = img.get_FFT();
     
-    f_img[0].shift( w/2, h/2, 0, 0, 2);
-    f_img[1].shift( w/2, h/2, 0, 0, 2);
+    //f_img[0].shift( w/2, h/2, 0, 0, 2);
+    //f_img[1].shift( w/2, h/2, 0, 0, 2);
     
     CImg<double> magn = magn_tdf(img);
+    CImg<double> magn2 = utils::get_magnitud(f_img, false).get_log().get_normalize(0,255);
+    magn2(w/2,h/2) = 255;
 
     std::vector<unsigned int> radios = leerRadios(f_radios);
     std::vector<std::pair<unsigned int, unsigned int> > centros = leerCentros(f_centros);
 
     CImg<double> mascara_notch = mascaraNotch(img, centros, radios);
-    //mascara_notch.shift(w/2, h/2, 0, 0, 2);
+    mascara_notch.shift(w/2, h/2, 0, 0, 2);
 
     CImgList<double> f_resultado;
     CImg<double> r_r(w,h,1,1,0);
@@ -90,23 +92,28 @@ int main(int argc, char *argv[]) {
     
     cimg_forXY(f_img[0],x,y) {
         r_r(x,y) = f_img[0](x,y) * mascara_notch(x,y);
-        r_i(x,y) = f_img[1](x,y) * mascara_notch(x,y);
+        r_i(x,y) = 0;
+        //r_i(x,y) = f_img[1](x,y) * mascara_notch(x,y);
     }
 
     r_r.normalize(0,255);
-    r_i.normalize(0,255);
+    r_r(0,0) = 255;
+    //r_i.normalize(0,255);
     
     f_resultado.push_back(r_r);
     f_resultado.push_back(r_i);
     
-    f_resultado[0].shift(w/2, h/2, 0, 0, 2);
-    f_resultado[1].shift(w/2, h/2, 0, 0, 2);
+    //f_resultado[0].shift(w/2, h/2, 0, 0, 2);
+    //f_resultado[1].shift(w/2, h/2, 0, 0, 2);
     
     CImg<double> resultado = f_resultado.get_FFT(true)[0];
     resultado.normalize(0, 255);
     resultado(0,0) = 0.0; //fix para display
+    
+    CImg<double> magn3 = utils::get_magnitud(f_resultado, false).get_normalize(0,255);
+    magn3(w/2,h/2) = 255;
 
     std::cerr<<"Error cuadratico medio = "<<resultado.MSE(img_original)<<"\n";
-    (img, magn, mascara_notch, resultado, img_original).display();
+    (img, magn2, mascara_notch, resultado, r_r.get_log(), r_i, magn3, img_original).display();
     return 0;
 }
