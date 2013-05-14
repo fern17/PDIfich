@@ -23,6 +23,19 @@ CImg<double> mascaraNotch(CImg<double> &img, std::vector<std::pair<unsigned int,
     return ret_val;
 }
 
+CImg<double> mascaraRechazaBanda(CImg<double> &img, unsigned int f0, unsigned int ff ) {
+    CImg<double> ret_val(img.width(), img.height(), 1,1,1);
+
+	cimg_forXY(img, x, y) {
+		bool dentro_grande = dentroCirculo((int) x, (int) y, img.width()/2, img.height()/2, ff );
+		bool dentro_chico = !dentroCirculo((int) x, (int) y, img.width()/2, img.height()/2, f0 );
+
+		if (dentro_grande && dentro_chico)
+			ret_val(x,y) = 0;
+	}
+	return ret_val;
+}
+
 std::vector<std::pair<unsigned int, unsigned int> > leerCentros(std::string file) {
     ifstream f (file.c_str());
     if (!f.is_open()) {
@@ -73,6 +86,11 @@ int main(int argc, char *argv[]) {
     unsigned int h = img.height();
     CImgList<double> f_img = img.get_FFT();
     
+
+    CImg<double> rbanda;
+
+    rbanda = mascaraRechazaBanda(img, 10, 20);
+    rbanda.display();
     //f_img[0].shift( w/2, h/2, 0, 0, 2);
     //f_img[1].shift( w/2, h/2, 0, 0, 2);
     
