@@ -148,7 +148,7 @@ int main(int argc, char *argv[]) {
     const unsigned int _orden_butterworth = cimg_option("-b", 1, "Input Image File");
     const unsigned int _ancho = cimg_option("-w", 11, "ancho del filtro gaussiano");
     const unsigned int _alto = cimg_option("-e", 11, "alto del filtro gaussiano");
-    const float ruido = cimg_option("-r", 1, "varianza del ruido");
+    const float ruido = cimg_option("-r", 1.0, "varianza del ruido");
 
     CImg<double> img(input), resultado_ideal_pb, resultado_butterworth_pb, resultado_gaussiano_pb;
     CImg<double> resultado_ideal_pa, resultado_butterworth_pa, resultado_gaussiano_pa, resultado_gaussiano_espacio;

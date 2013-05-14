@@ -38,7 +38,7 @@ int main(int argc, char *argv[]) {
     const unsigned int _frec_corte = cimg_option("-f", 150, "Input Image File");
     const float gamma_l = cimg_option("-b", 0.9, "Efecto en bajas frecuencias");
     const float gamma_h = cimg_option("-a", 1.1, "Efecto en altas frecuencias");
-    const float c = cimg_option("-c", 1, "Constante de sharpness");
+    const float c = cimg_option("-c", 1.0, "Constante de sharpness");
     std::cout<<"Parametros seleccionados: \n  * frec_corte = "<<_frec_corte<<
         "\n  * gamma_l = "<<gamma_l<<"\n  * gamma_h = "<<gamma_h<<"\n  * c = "<<c<<'\n';
   

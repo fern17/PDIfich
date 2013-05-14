@@ -111,8 +111,8 @@ CImg<T> filtradoOrden(CImg<T> img, unsigned int tipo = 0, unsigned int ancho = 3
 int main(int argc, char *argv[]) {
     //@ Calcula los filtros de medias para una imagen
 	const char* input = cimg_option("-i", "../images/sangre.jpg", "Input Image File");
-    const double desvio_impulsivo = cimg_option("-s", 20, "Desvio sal y pimienta");
-    const double desvio_gaussiano = cimg_option("-g", 20, "Desvio Gaussiano");
+    const double desvio_impulsivo = cimg_option("-s", 20.0, "Desvio sal y pimienta");
+    const double desvio_gaussiano = cimg_option("-g", 20.0, "Desvio Gaussiano");
 	const unsigned int ancho = cimg_option("-w", 3, "Input Image File");
 	const unsigned int alto = cimg_option("-a", 3, "Input Image File");
 	const unsigned int alfa = cimg_option("-f", 2, "Input Image File");

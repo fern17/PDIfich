@@ -156,8 +156,8 @@ CImg<T> cambiarIntesidad(CImg<T> imagen, CImg<T> intesidad) {
 int main(int argc, char *argv[]) {
     //@ Calcula los filtros de medias para una imagen
 	const char* input = cimg_option("-i", "../images/sangre.jpg", "Input Image File");
-    const double desvio_impulsivo = cimg_option("-s", 20, "Desvio sal y pimienta");
-    const double desvio_gaussiano = cimg_option("-g", 20, "Desvio Gaussiano");
+    const double desvio_impulsivo = cimg_option("-s", 20.0, "Desvio sal y pimienta");
+    const double desvio_gaussiano = cimg_option("-g", 20.0, "Desvio Gaussiano");
     const double Q = cimg_option("-q", 1.2, "Parametro media contra armonica");
 	const unsigned int ancho = cimg_option("-w", 3, "Input Image File");
 	const unsigned int alto = cimg_option("-h", 3, "Input Image File");

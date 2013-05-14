@@ -17,7 +17,7 @@ int main(int argc, char *argv[]) {
     const char* _filterp = cimg_option("-m", "filtro_ej4p.txt", "Input filter File");
     const char* _filterg = cimg_option("-n", "filtro_ej4g.txt", "Input filter File");
     const unsigned int _lado = cimg_option("-l", 5, "Input filter File");
-    const float _sigma = cimg_option("-s", 2, "Input filter File");
+    const float _sigma = cimg_option("-s", 2.0, "Input filter File");
 
     CImg<double> img(_input), output_prom, output_gaussiano;
 

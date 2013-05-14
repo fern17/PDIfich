@@ -68,7 +68,7 @@ int main(int argc, char *argv[]) {
     const char* _input  = cimg_option("-i", "../images/esqueleto.tif", "Input Image File");
     const char* _filter = cimg_option("-m", "filtro_ej5.txt", "Input filter File");
     const char* _filter2 = cimg_option("-n", "filtro_ej72.txt", "Input filter File");
-    const float _c = cimg_option("-c", 1, "Input filter File");
+    const float _c = cimg_option("-c", 1.2, "Input filter File");
     const float _gamma = cimg_option("-g", 0.5, "Input filter File");
     const float _scalar = cimg_option("-e", 1.2, "Input filter File");
 
