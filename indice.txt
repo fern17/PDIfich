@@ -1,198 +1,219 @@
-##########./guia3-histograma-filtrado/ejercicio4.cpp##########
+	./guia3-histograma-filtrado/ejercicio4.cpp
 //@ Leer filtro, aplicar filtro, convolve con filtro de distinta medida
-##########./guia3-histograma-filtrado/ejercicio712.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio712.cpp
 //@ Devuelve el vecindario centrado en x0,y0 y de tamanio step_x*2 x step_y*2...
-##########./guia3-histograma-filtrado/ejercicio712.cpp##########
 //@ Aplica el histograma local recorriendo la imagen y ecualizando vecindarios pequenios
-##########./guia3-histograma-filtrado/ejercicio712.cpp##########
 //@ Realiza el histograma local por vecindarios chicos
-##########./guia3-histograma-filtrado/ejercicio61.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio61.cpp
 //@ Leer filtro acentuado, aplicar filtro acentuado, convolve con filtro de distinta medida, Filtrado de Mascara Difusa
-##########./guia3-histograma-filtrado/ejercicio62.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio62.cpp
 //@ Leer filtro acentuado, aplicar filtro acentuado, convolve con filtro de distinta medida. Filtrado de Alta potencia
-##########./guia3-histograma-filtrado/ejercicio5.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio5.cpp
 //@ Leer filtro acentuado, aplicar filtro acentuado, convolve con filtro de distinta medida
-##########./guia3-histograma-filtrado/ejercicio42.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio42.cpp
 //@ Leer filtro, aplicar filtro, convolve con filtro de distinta medida. Filtra segun un umbral
-##########./guia3-histograma-filtrado/ejercicio2.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio722.cpp
+
+	./guia3-histograma-filtrado/ejercicio2.cpp
 //@ Lee un archivo con las coordenadas de los parches a obtener la imagen parametro.
-##########./guia3-histograma-filtrado/ejercicio2.cpp##########
 //@ Identificar de ruido a partir de histograma, leer desde archivo separado por espacios
-##########./guia3-histograma-filtrado/ejercicio71.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio71.cpp
 //@ Lee los parches donde aplicar la ecualizacion
-##########./guia3-histograma-filtrado/ejercicio71.cpp##########
 //@ Encontrar cosas oscuras mediante ecualizacion de histograma 
-##########./guia3-histograma-filtrado/ejercicio3.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio3.cpp
 //@ Lee un filtro desde archivo    
-##########./guia3-histograma-filtrado/ejercicio3.cpp##########
 //@ Leer filtro, aplicar filtro, convolve con filtro de distinta medida
-##########./guia3-histograma-filtrado/ejercicio72.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio72.cpp
 //@ Leer filtro acentuado, aplicar filtro acentuado, convolve con filtro de distinta medida
-##########./guia3-histograma-filtrado/ejercicio12.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio12.cpp
 //@ muestra histogramas de distintas imágenes (A,B C D E)
-##########./guia3-histograma-filtrado/ejercicio1.cpp##########
+
+	./guia3-histograma-filtrado/ejercicio1.cpp
 //@ histograma, ecualización, crear y graficar histograma
-##########./guia4-color/ejercicio4.cpp##########
+
+	./guia4-color/ejercicio4.cpp
 //@ Compara el resultado de ecualizar una imagen a partir de cada canal RGB y la intensidad de HSI
-##########./guia4-color/ejercicio2c.cpp##########
+
+	./guia4-color/ejercicio2c.cpp
 //@ Binariza una imagen en base a un umbral, falso color en imagen binaria, truco para mostrar imagenes binarias en el display
-##########./guia4-color/ejercicio5.cpp##########
+
+	./guia4-color/ejercicio5.cpp
 //@ Compara el resultado de ecualizar una imagen a partir de cada canal RGB y la intensidad de HSI
-##########./guia4-color/ejercicio42.cpp##########
+
+	./guia4-color/ejercicio42.cpp
 //@ Compara el resultado de ecualizar una imagen a partir de cada canal RGB y la intensidad de HSI
-##########./guia4-color/ejercicio3.cpp##########
+
+	./guia4-color/ejercicio2.cpp
+
+	./guia4-color/ejercicio3.cpp
 //@ Tomar una imagen, realizar histograma, ver el rango de grises deseado y cambiar estos grises por colores para resaltado
-##########./guia4-color/ejercicio1.cpp##########
+
+	./guia4-color/ejercicio1.cpp
 //@ Lee una paleta de colores y convierte una imagen en gris en una imagen en falso color usando la paleta
-##########./guia5-fourier/ejercicio4.cpp##########
+
+	./guia5-fourier/ejercicio4.cpp
 //@ Genera un filtro ideal con el radio especificado (frecuencia de corte)
-##########./guia5-fourier/ejercicio4.cpp##########
 //@ Genera un filtro de Butterworth del orden y frecuencia de corte dados
-##########./guia5-fourier/ejercicio4.cpp##########
 //@ Genera un filtro Gaussiano
-##########./guia5-fourier/ejercicio6.cpp##########
+
+	./guia5-fourier/ejercicio7.cpp
+
+	./guia5-fourier/ejercicio22.cpp
+
+	./guia5-fourier/ejercicio2.cpp
+
+	./guia5-fourier/ejercicio6.cpp
 //@ Genera un filtro homomorfico
-##########./guia1-introduccion/ejercicio4.cpp##########
+
+	./guia5-fourier/ejercicio3.cpp
+
+	./guia5-fourier/ejercicio1.cpp
+
+	./guia1-introduccion/ejercicio4.cpp
 //@ Genera una imagen de degradado de 256x256
-##########./guia1-introduccion/ejercicio4.cpp##########
 //@ Genera una imagen de degradado de 0 a 100 y luego la normaliza antes de dibujar
-##########./guia1-introduccion/ejercicio4.cpp##########
 //@ Genera una imagen binaria de rayas verticales alternadas
-##########./guia1-introduccion/ejercicio4.cpp##########
 //@ Genera una imagen binaria de ladoxlado con un circulo centrado del radio pasado
-##########./guia1-introduccion/ejercicio5.cpp##########
+
+	./guia1-introduccion/ejercicio5.cpp
 //@ Carga una imagen y la subdimensiona y luego expande, para emular el fenomeno de submuestreo
-##########./guia1-introduccion/ejercicio7.cpp##########
+
+	./guia1-introduccion/ejercicio7.cpp
 //@ Genera una imagen de degradado de 256x256
-##########./guia1-introduccion/ejercicio7.cpp##########
 //@ Transforma una imagen uchar a bool con la tecnica de halftoning (dithering)
-##########./guia1-introduccion/ejercicio7.cpp##########
 //@ Realiza la representacion de imagenes en escala de grises con halftoning de imagenes binarias
-##########./guia1-introduccion/ejercicio2.cpp##########
+
+	./guia1-introduccion/ejercicio2.cpp
 //@ Carga distintas imagenes, las agrega a una CImgList y la muestra
-##########./guia1-introduccion/ejercicio6.cpp##########
+
+	./guia1-introduccion/ejercicio6.cpp
 //@ Carga una imagen y la cuantiza con niveles de 256,128,64,etc..
-##########./guia1-introduccion/ejercicio3.cpp##########
+
+	./guia1-introduccion/ejercicio3.cpp
 //@ Retorna el perfil de intensidad a traves de un segmento en cualquier direccion. Hace uso de las variables globales click1 y click2
-##########./guia1-introduccion/ejercicio3.cpp##########
 //@ Obtiene el perfil de una imagen y lo devuelve en cortada
-##########./guia1-introduccion/ejercicio3.cpp##########
 //@ Registra los dos clicks y al tenerlos, llama a perfilIntesidad
-##########./guia1-introduccion/ejercicio1.cpp##########
+
+	./guia1-introduccion/ejercicio1.cpp
 //@ Toma un nombre de imagen en input, recorta desde (x0,y0) hasta (xf,yf) y la guarda en output
-##########./guia2-operaciones-puntuales/ejercicio4.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio4.cpp
 //@ Aplica el filtro emboss a la imagen con el corrimiento pasado por parametros
-##########./guia2-operaciones-puntuales/ejercicio4.cpp##########
 //@ Aplica el filtro emboss
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio5.cpp
 //@ Operador AND logico entre dos imagenes booleanas
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
 //@ Operador NOT logico a una imagen
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
 //@ Operador OR logico entre dos imagenes booleanas
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
 //@ Operador XOR logico entre dos imagenes booleanas
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
 //@ Operador menor < entre dos imagenes en escala de grises
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
 //@ Operador menor igual <= entre dos imagenes en escala de grises
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
 //@ Operador mayor > entre dos imagenes en escala de grises
-##########./guia2-operaciones-puntuales/ejercicio5.cpp##########
 //@ Operador mayor igual >= entre dos imagenes en escala de grises
-##########./guia2-operaciones-puntuales/ejercicio73.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio73.cpp
 //@ Calcula Error Cuadratico Medio entre dos imagenes enmascaradas para ver si falta una pastilla
-##########./guia2-operaciones-puntuales/ejercicio2.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio2.cpp
 //@ Crea una LUT con la transformada logaritmo
-##########./guia2-operaciones-puntuales/ejercicio2.cpp##########
 //@ Crea una LUT con la transformada potencia
-##########./guia2-operaciones-puntuales/ejercicio2.cpp##########
 //@ Lee una imagen desde input y le aplica la transformada logaritmo
-##########./guia2-operaciones-puntuales/ejercicio2.cpp##########
 //@ Lee una imagen desde input y le aplica la transformada potencia
-##########./guia2-operaciones-puntuales/ejercicio2.cpp##########
 //@ Aplica las transformaciones logaritmo y potencia a una imagen
-##########./guia2-operaciones-puntuales/ejercicio71.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio71.cpp
 //@ Crea una máscara de tamaño WxH que tiene en blanco sólo un rectangulo entre (x0,y0) y (x1,y1)
-##########./guia2-operaciones-puntuales/ejercicio6.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio6.cpp
 //@ Devuelve el plano de bits pedido
-##########./guia2-operaciones-puntuales/ejercicio6.cpp##########
 //@ Calcula el error cuadratico medio entre dos imagenes
-##########./guia2-operaciones-puntuales/ejercicio6.cpp##########
 //@ Utilizacion de las rodajas de bits y calculo de error
-##########./guia2-operaciones-puntuales/ejercicio3.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio3.cpp
 //@ Realiza la Suma punto a punto de una imagen con otra. Divide por la mitad
-##########./guia2-operaciones-puntuales/ejercicio3.cpp##########
 //@ Realiza la resta punto a punto de una imagen con otra, acotando adecuadamente
-##########./guia2-operaciones-puntuales/ejercicio3.cpp##########
 //@ Multiplica una imagen por una máscara punto a punto
-##########./guia2-operaciones-puntuales/ejercicio3.cpp##########
 //@ Multiplica una imagen por la invertida de la mascara que se le pasa por parametro
-##########./guia2-operaciones-puntuales/ejercicio3.cpp##########
 //@ Toma un conjunto de imagenes y calcula el promedio para sacar el ruido
-##########./guia2-operaciones-puntuales/ejercicio3.cpp##########
 //@ Realiza las operaciones suma, resta, multipicacion (enmascaramiento), divison (enmascaramiento invertido) y reduccion de ruido por promediado
-##########./guia2-operaciones-puntuales/ejercicio72.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio72.cpp
 //@ Crea una máscara de tamaño WxH que tiene en blanco sólo un rectangulo entre (x0,y0) y (x1,y1)
-##########./guia2-operaciones-puntuales/ejercicio72.cpp##########
 //@ Lee desde un archivo las coordenadas de las mascaras y genera un vector de mascaras
-##########./guia2-operaciones-puntuales/ejercicio72.cpp##########
 //@ Aplicacion de multiples mascaras y votos para decidir entre dos motherboard
-##########./guia2-operaciones-puntuales/ejercicio1.cpp##########
+
+	./guia2-operaciones-puntuales/ejercicio1.cpp
 //@ Lee los parametros de una transformacion lineal por tramos y devuelve una LUT en un vector
-##########./guia2-operaciones-puntuales/ejercicio1.cpp##########
 //@ Devuelve una imagen que representa el mapeo de LUT
-##########./guia2-operaciones-puntuales/ejercicio1.cpp##########
 //@ Aplica a img la LUT pasada por parametro
-##########./guia2-operaciones-puntuales/ejercicio1.cpp##########
 //@ Captura la posicion de 2 clicks y crea una LUT que pase por la recta que definan. Aplica la Lut a la imagen
-##########./guia2-operaciones-puntuales/ejercicio1.cpp##########
 //@ Le aplica la transformada lineal a img, leida desde input
-##########./guia2-operaciones-puntuales/ejercicio1.cpp##########
 //@ Crea una imagen binaria con la linea identidad. Luego toma entrada del usuario para cambiar la pendiente
-##########./guia2-operaciones-puntuales/ejercicio1.cpp##########
 //@ Aplicacion de transformadas lineales y transformadas lineales por tramos a imagenes
-##########./utils/filtradoFrecuencia.cpp##########
+
+	./utils/filtradoFrecuencia.cpp
 //@ Genera un filtro ideal con el radio especificado (frecuencia de corte)
-##########./utils/filtradoFrecuencia.cpp##########
 //@ Genera un filtro de Butterworth del orden y frecuencia de corte dados
-##########./utils/filtradoFrecuencia.cpp##########
 //@ Genera un filtro Gaussiano
-##########./utils/filtradoFrecuencia.cpp##########
 //@ Realiza el filtrado en frecuencia a partir de la especificacion de una imagen y el filtro en frecuencia
-##########./utils/LUT.cpp##########
+
+	./utils/LUT.cpp
 //@ Devuelve una imagen que representa el mapeo de LUT
-##########./utils/LUT.cpp##########
 //@ Aplica a img la LUT pasada por parametro
-##########./utils/LUT.cpp##########
 //@ Crea una LUT con la transformada logaritmo
-##########./utils/LUT.cpp##########
 //@ Crea una LUT con la transformada potencia
-##########./utils/genArchivoMascara.cpp##########
+
+	./utils/getValue.cpp
+
+	./utils/genArchivoMascara.cpp
 //@ Genera una mascara de promediado
-##########./utils/genArchivoMascara.cpp##########
 //@ genera una mascara gaussiana
-##########./utils/genArchivoMascara.cpp##########
 //@ Lee un filtro desde archivo con el formato:
-##########./utils/bresenham.cpp##########
+
+	./utils/fourier.cpp
+
+	./utils/bresenham.cpp
 //@ Obtiene las coordenadas de bresenham para dado un punto inicial y final, y los tamaños de la imagen. Los devuelve en un vector<vector<uint>>. Codigo robado de internet
-##########./guia6-restauracion/ejercicio2.cpp##########
+
+	./guia6-restauracion/ejercicio4.cpp
+//@ 
+
+	./guia6-restauracion/ejercicio2.cpp
 //@ Devuelve el vecindario centrado en x0,y0 y de tamanio step_x*2 x step_y*2...
-##########./guia6-restauracion/ejercicio2.cpp##########
 //@ Calcula la media geometrica para un vecindario dado
-##########./guia6-restauracion/ejercicio2.cpp##########
 //@ Calcula la media Contra Armonica de un vecindario, para un valor de Q dado. Contempla los casos especiales
-##########./guia6-restauracion/ejercicio2.cpp##########
 //@ Calcula la media armonica llamando a mediaContraArmonica con el parametro Q necesario
-##########./guia6-restauracion/ejercicio2.cpp##########
 //@ Calcula la media aritmetica llamando a mediaContraArmonica con el parametro Q necesario
-##########./guia6-restauracion/ejercicio2.cpp##########
 //@ Aplica el filtro de medias, para un Q determinado. Llama a los otros filtros de medias segun el parametro tipo:
-##########./guia6-restauracion/ejercicio2.cpp##########
 //@ Cambia el canal de intesidad de una imagen RGB, y la devuelve en RGB
-##########./guia6-restauracion/ejercicio2.cpp##########
 //@ Calcula los filtros de medias para una imagen
-##########./guia6-restauracion/ejercicio1.cpp##########
+
+	./guia6-restauracion/ejercicio3.cpp
+//@ Devuelve el vecindario centrado en x0,y0 y de tamanio step_x*2 x step_y*2...
+//@ Cambia el canal de intesidad de una imagen RGB, y la devuelve en RGB
+//@ Devuelve la mediana de un vector calculando floor
+//@ Calcula todos los filtros de orden
+//@ Calcula los filtros de medias para una imagen
+
+	./guia6-restauracion/ejercicio1.cpp
 //@ Genera una imagen con un sólo gris y le aplica ruido. Dibuja las imagenes y los histogramas
-##########./ejemplos/ejercicio3.cpp##########
+
+	./tutorial.cpp
+
+	./ejemplos/ejemplo1.cpp
+
+	./ejemplos/ejemplo2.cpp
+
+	./ejemplos/ejercicio3.cpp
 //@ Leer filtro, aplicar filtro, convolve con filtro de distinta medida
+

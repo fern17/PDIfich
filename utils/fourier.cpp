@@ -2,6 +2,7 @@
 namespace utils {
 #include <CImg.h>
 #include <cmath>
+using namespace cimg_library;   //Necesario
 
 //Devuelve la magnitud de una transformada de Fourier    
 CImg<double> get_magnitud(CImgList<double> tdf, bool centrado = false) {
