@@ -1,6 +1,6 @@
 namespace utils {
-#include <cmath>
 #include <CImg.h>               //include basico de CImg
+#include <cmath>
 #include <complex>
 
 using namespace cimg_library;   //Necesario
