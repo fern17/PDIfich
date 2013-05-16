@@ -45,7 +45,7 @@ pair<unsigned int, unsigned int> get_index_menor_distancia(CImg<double> &vecinda
 	unsigned int retx = 0;
 	unsigned int rety = 0;
 	acumulador = tempy(retx,rety);
-
+    //Ahora buscamos el valor menor
 	cimg_forXY(tempy,x,y) {
 		if (tempy(x,y) < acumulador) {
 			retx = x;
@@ -53,6 +53,7 @@ pair<unsigned int, unsigned int> get_index_menor_distancia(CImg<double> &vecinda
 			acumulador = tempy(retx,rety);
 		}
 	}
+    // y retornamos un pair de la posicion
 	return std::make_pair(retx, rety);
 }
 
