@@ -5,10 +5,7 @@
 #include <ctime>
 #include <vector>
 #include <string>
-
-#include "../utils/PDI_functions.h"
-#include "../utils/fourier.cpp"
-#include "../utils/genArchivoMascara.cpp"
+#include "getSeeds.cpp"
 using namespace cimg_library;   //Necesario
 
 
@@ -44,7 +41,7 @@ int main(int argc, char *argv[]) {
 		if (imagenes_a_leer[i].compare("NOT_FOUND") == 0) { //Bandera para identificar que no existe la imagen y hay que generarla
 			// COMING SOON
 		} else {
-			CImg<double> img_tmp(imagenes_a_leer[i]);
+			CImg<double> img_tmp(imagenes_a_leer[i].c_str());
 			
 			if (leer_primera) {
 				W = img_tmp.width();
