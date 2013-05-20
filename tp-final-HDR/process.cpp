@@ -36,6 +36,8 @@ int main(int argc, char *argv[]) {
 	const char* _ejemplo = cimg_option("-e", "cave", "Carpeta de Ejemplos");
 	//Leer sobre que formato se va a trabajar
 	const char* _format = cimg_option("-f", "jpg", "Formato de Ejemplos");
+	//Cantidad de muestras en el kernel de convolucion cubico
+    unsigned int _muestras = cimg_option("-m", 49 , "Cantidad de muestras en el kernel");
 
 	salida<<_ejemplo<<",";
 	//Obtener las imágenes de la carpeta
@@ -80,6 +82,31 @@ int main(int argc, char *argv[]) {
 	}
 	
 	img_compuesta.save("test.bmp");
+
+
+    //Genera los kernel de convolucion cubica horizontales y verticales
+    CImg<double> kernelHorizontal = getCubicKernel(_muestras);
+    CImg<double> kernelVertical = kernelHorizontal.get_transpose();
+
+
+    CImg<double> resultado(W,H,1,C);
+
+    //Recorre la imagen
+    cimg_forXY(img_compuesta,x,y){
+        std::cout<<x<<' '<<y<<'\n';
+        //Captura el vecindario local de 4x4
+        CImg<double> vecindario = img_compuesta.get_crop(x-2,y-2,x+2,y+2);
+        //Convoluciona verticalmente
+        CImg<double> res_vec = vecindario.get_convolve(kernelVertical);
+        //Asigna el valor del medio de la convolucion
+        for (unsigned int c = 0; c < C; c++) {
+            resultado(x,y,0,c) = res_vec(res_vec.width()/2, res_vec.height()/2,0,c);
+        }
+    }
+
+    //CImg<double> resultado = img_compuesta.get_convolve(kernelHorizontal).get_convolve(kernelVertical);
+    (img_compuesta, resultado).display();
+
 
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
 }
