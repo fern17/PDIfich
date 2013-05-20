@@ -92,20 +92,57 @@ int main(int argc, char *argv[]) {
     CImg<double> resultado(W,H,1,C);
 
     //Recorre la imagen
-    cimg_forXY(img_compuesta,x,y){
-        std::cout<<x<<' '<<y<<'\n';
-        //Captura el vecindario local de 4x4
-        CImg<double> vecindario = img_compuesta.get_crop(x-2,y-2,x+2,y+2);
-        //Convoluciona verticalmente
-        CImg<double> res_vec = vecindario.get_convolve(kernelVertical);
-        //Asigna el valor del medio de la convolucion
-        for (unsigned int c = 0; c < C; c++) {
-            resultado(x,y,0,c) = res_vec(res_vec.width()/2, res_vec.height()/2,0,c);
+    for (unsigned int x = 0; x < img_compuesta.width(); x+=2) {
+        for (unsigned int y = 0; y < img_compuesta.height(); y+=2) {
+            std::cout<<x<<' '<<y<<'\n';
+            
+            //Esta en color esto :S
+            CImg<double> vecindario = img_compuesta.get_crop(x,y,x+4,y+4);
+            //Para cada canal
+            CImg<double> img_promedios(4,1,1,C);
+            //Para cada canal
+            for (unsigned int c = 0; c < C; c++) {
+
+                //Promedios por fila
+                for (unsigned int i = 0; i < vecindario.height(); i++) {
+                    double sum = 0.0;
+                    //Para cada columna
+                    for (unsigned int j = 0; j < vecindario.width(); j++) { 
+                        sum += vecindario(i,j,0,c);
+                    }
+                    img_promedios(i,0,0,c) = sum/((double) vecindario.width());
+                }
+                double sum = 0.0;
+                //Para cada una de las filas de los promedios
+                for (unsigned int i = 0; i < img_promedios.width(); i++) {
+                    sum += img_promedios(i,0,0,c);
+                }
+                double promedio_final = sum / ((double) img_promedios.width());
+                resultado(x/2,y/2,0,c) = promedio_final;
+            }
+            
+            //Aplicacion del bicubico, coming soon
+            /*
+            for (unsigned int fila = y-1; fila < y+3; fila++){
+                CImg<double> vecindario = img_compuesta.get_crop(x-1,fila,x+2,fila);
+                std::cout<<vecindario.width()<<' '<<vecindario.height()<<'\n';
+                std::cout<<vecindario.get_convolve(kernelHorizontal).width()<<' '<<vecindario.get_convolve(kernelHorizontal).height()<<'\n';
+                std::getchar();
+            }
+            //Captura el vecindario local de 4x4
+            
+            //Convoluciona verticalmente
+            CImg<double> res_vec = vecindario.get_convolve(kernelVertical);
+            //Asigna el valor del medio de la convolucion
+            for (unsigned int c = 0; c < C; c++) {
+                resultado(x,y,0,c) = res_vec(res_vec.width()/2, res_vec.height()/2,0,c);
+            }
+            */
         }
     }
 
     //CImg<double> resultado = img_compuesta.get_convolve(kernelHorizontal).get_convolve(kernelVertical);
-    (img_compuesta, resultado).display();
+    (lista[0], lista[1], lista[2], lista[3], resultado).display();
 
 
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
