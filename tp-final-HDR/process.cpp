@@ -6,6 +6,7 @@
 #include <vector>
 #include <string>
 #include "getSeeds.cpp"
+#include "getCubicKernel.cpp"
 using namespace cimg_library;   //Necesario
 
 

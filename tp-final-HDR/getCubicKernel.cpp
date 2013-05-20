@@ -2,8 +2,11 @@
 #include <cmath>
 #include <vector>
 
+#include <CImg.h>               //include basico de CImg
+using namespace cimg_library;   //Necesario
+
 //Retorna un kernel cubico en [a,b] de n elementos
-std::vector<double> getCubicKernel(unsigned int n, double a = -2.0, double b = 2.0){
+CImg<double> getCubicKernel(unsigned int n, double a = -2.0, double b = 2.0){
     
     std::cout<<"Kernel generado en ["<<a<<','<<b<<"] con "<<n<<" pasos\n";
 
@@ -19,7 +22,8 @@ std::vector<double> getCubicKernel(unsigned int n, double a = -2.0, double b = 2
     }
     
     //W(x)
-    std::vector<double> y;;
+    std::vector<double> y;
+    CImg<double> ret_val(x.size(), 1, 1, 1);
     for (unsigned int i = 0; i < x.size(); i++) {
         double valor = x[i];
         double xx = fabs(valor);
@@ -30,9 +34,10 @@ std::vector<double> getCubicKernel(unsigned int n, double a = -2.0, double b = 2
             agregar = -0.5*std::pow(xx,3) + 2.5*std::pow(xx,2) - 4.0*xx + 2.0;
         else
             agregar = 0.0;
-
+        ret_val(i) = agregar;
         y.push_back(agregar);
     }
-    return y;
+
+    return ret_val;
 }
 
