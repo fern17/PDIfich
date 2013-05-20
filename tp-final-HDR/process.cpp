@@ -6,9 +6,13 @@
 #include <fstream>
 #include <vector>
 #include <string>
+<<<<<<< HEAD
 
 #include "getSeeds.cpp"
 
+=======
+#include "getSeeds.cpp"
+>>>>>>> ab2518f47d9dbd003af5cacbd8b41e7e2e0c03fe
 using namespace cimg_library;   //Necesario
 
 
@@ -79,7 +83,6 @@ int main(int argc, char *argv[]) {
 
 	}
 	
-
 	img_compuesta.save("test.bmp");
 
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
