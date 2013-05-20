@@ -30,17 +30,19 @@ bool leer_primera = true;
 int main(int argc, char *argv[]) {
 	//Leer sobre que ejemplo se va a trabajar
 	const char* _ejemplo = cimg_option("-e", "cave", "Carpeta de Ejemplos");
+	//Leer sobre que formato se va a trabajar
+	const char* _format = cimg_option("-f", "jpg", "Formato de Ejemplos");
 
 	//Obtener las imágenes de la carpeta
-	std::vector<std::string> imagenes_a_leer = getSeeds(_ejemplo);
+	std::vector<std::string> imagenes_a_leer = getSeeds(_ejemplo, _format);
 
 	//Recorremos las imágenes leidas y las agregamos a una lista
 	//En caso de no existir alguna (faltante), la generaremos
 	unsigned int _n = imagenes_a_leer.size();
 
 	for(unsigned int i = 0; i < _n; i++) {
-		if (imagenes_a_leer[i] == -1) { //Bandera para identificar que no existe la imagen y hay que generarla
-
+		if (imagenes_a_leer[i].compare("NOT_FOUND") == 0) { //Bandera para identificar que no existe la imagen y hay que generarla
+			// COMING SOON
 		} else {
 			CImg<double> img_tmp(imagenes_a_leer[i]);
 			
@@ -61,22 +63,14 @@ int main(int argc, char *argv[]) {
 
 	for (unsigned int x = 0; x < W; x++) {
 		for (unsigned int y = 0; y < H; y++ ) {
-			img_compuesta(x*2,y*2) = lista[0](x,y);
-			img_compuesta(x*2,y*2+1) = lista[1](x,y);
-			img_compuesta(x*2+1,y*2+1) = lista[2](x,y);
-			img_compuesta(x*2+1,y*2) = lista[3](x,y);
+			img_compuesta(x*2      ,  y*2      ) = lista[3](x,y);
+			img_compuesta(x*2      ,  y*2 + 1  ) = lista[2](x,y);
+			img_compuesta(x*2 + 1  ,  y*2 + 1  ) = lista[1](x,y);
+			img_compuesta(x*2 + 1  ,  y*2      ) = lista[0](x,y);
 		}
 
 	}
 	
 
-	// cimg_forXY(img_compuesta, x ,y ) {
-
-	// 	unsigned int modx = x%2;
-	// 	unsigned int mody = y%2;
-
-	// 	img_compuesta(x,y) = 
-
-	// }  
-
+	img_compuesta.display();
 }
