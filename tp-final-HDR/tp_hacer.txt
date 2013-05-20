@@ -11,7 +11,7 @@ Por ejemplo:
 Notar que k_1 * I_0(i,j) = k_1 * I_1(i,j) = k_2 * I_2(i,j) = k_3 * I_3(i,j)
 O sea, representan el mismo punto con distinta iluminación (exposición)
 
-Realizar una imagen compuesta C 4Mx4N donde se juntan las 4 imágenes. De manera que:
+Realizar una imagen compuesta C 2Mx2N donde se juntan las 4 imágenes. De manera que:
 C(0,0) = I_0(0,0)
 C(0,1) = I_1(0,0)
 C(1,1) = I_2(0,0)
