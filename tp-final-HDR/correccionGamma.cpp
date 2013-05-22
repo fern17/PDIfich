@@ -3,11 +3,11 @@
 
 using namespace cimg_library;   //Necesario
 
-CImg<double> correccionGamma(CImg<double> img, double gamma) {
+CImg<double> correccionGamma(CImg<double> img, double gamma, double A) {
     CImg<double> ret_val(img.width(), img.height(), img.depth(), img.spectrum(), 0.0);
     cimg_forC(img, c) {
         cimg_forXY(img,x,y) {
-            double val = pow(img(x,y,0,c),gamma);
+            double val = A*pow(img(x,y,0,c),gamma);
             ret_val(x,y,0,c) = val;
         }
     }
@@ -15,14 +15,14 @@ CImg<double> correccionGamma(CImg<double> img, double gamma) {
 }
 
 
-CImg<double> correccionGammaIntensidad(CImg<double> img, double gamma) {
+CImg<double> correccionGammaIntensidad(CImg<double> img, double gamma, double A) {
     CImg<double> ret_val(img.width(), img.height(), img.depth(), 0, 0.0);
     
     CImg<double> img_hsi = img.get_RGBtoHSI();
     CImg<double> intensidad = img_hsi.get_channel(2);
 
     cimg_forXY(intensidad,x,y) {
-        intensidad(x,y) = pow(intensidad(x,y),gamma);
+        intensidad(x,y) = A*pow(intensidad(x,y),gamma);
     }
     ret_val.append(img_hsi.get_channel(0) , 'c');
     ret_val.append(img_hsi.get_channel(1) , 'c');

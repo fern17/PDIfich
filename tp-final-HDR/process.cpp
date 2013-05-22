@@ -1,7 +1,6 @@
 #include <CImg.h>               //include basico de CImg
 #include <iostream>
 #include <cmath>
-#include <complex>
 #include <ctime>
 #include <fstream>
 #include <vector>
@@ -11,6 +10,7 @@
 #include "cubicInterpolator.cpp"
 #include "correccionGamma.cpp"
 #include "transformadaLogaritmo.cpp"
+#include "linealPotencia.cpp"
 
 using namespace cimg_library;   //Necesario
 
@@ -35,11 +35,9 @@ bool leer_primera = true;
 CImg<double> highBoosting(double A, CImg<double> & imagen, CImg<double> & mascara) {
 
     CImg<double> ret_val;
-    
-
     cimg_forC(imagen, c) {
         CImg<double> canal = imagen.get_channel(c);
-        ret_val.append(A*canal + canal.get_convolve(mascara), 'c' );  
+        ret_val.append((A-1)*canal + canal.get_convolve(mascara), 'c' );  
     }
 
     return ret_val;
@@ -147,7 +145,10 @@ int main(int argc, char *argv[]) {
     const double dx = cimg_option("-x", 0.5, "Paso en x en la interpolacion");
     const double dy = cimg_option("-y", 0.5, "Paso en y en la interpolacion");
     const double gamma = cimg_option("-g", 0.8, "Gamma de la correccion gamma");
+    const double A_gamma = cimg_option("-a", 1.2, "Parametro c del logaritmo");
     const double c_log = cimg_option("-c", 0.8, "Parametro c del logaritmo");
+    const double A_hb = cimg_option("-b", 5.0, "Parametro A del High Boost");
+    const unsigned int transformada_mariano = cimg_option("-z", 1, "Cantidad de veces de aplicar la transformada mariano");
 
 	salida<<_ejemplo<<",";
 	//Obtener las imágenes de la carpeta
@@ -193,25 +194,42 @@ int main(int argc, char *argv[]) {
 	
     CImg<double> resultado_promedio = promediado(img_compuesta);
     CImg<double> resultado_interpolacion = interpolacion(img_compuesta, dx, dy);
-    resultado_promedio.save("resultado_promedio.bmp");
-    resultado_interpolacion.save("resultado_interpolacion.bmp");
 
+    //resultado_promedio = correccionGamma(resultado_promedio, gamma, A_gamma);
     CImg<double> intensidad = resultado_promedio.get_RGBtoHSI().get_channel(2).get_equalize(256);
     CImg<double> promedio_ieq = cambiarIntesidad(resultado_promedio, intensidad );
 
+    //resultado_interpolacion = correccionGamma(resultado_interpolacion, gamma, A_gamma);
     intensidad = resultado_interpolacion.get_RGBtoHSI().get_channel(2).get_equalize(256);
     CImg<double> interpolacion_ieq = cambiarIntesidad(resultado_interpolacion, intensidad );
     
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
 
+    //Aplica el High Boost
+    CImg<double> mascara(3,3,1,1,-1);
+    mascara(1,1) = 8;
+    CImg<double> hb_prom = highBoosting(A_hb, promedio_ieq, mascara);
+    CImg<double> hb_interp = highBoosting(A_hb, interpolacion_ieq, mascara);
 
-    // CImg<double> mascara(3,3,1,1,-1);
-    // mascara(1,1) = 18;
-
-    // CImg<double> hb = highBoosting(15.8, resultado_promedio, mascara);
-
-
-    (resultado_promedio, promedio_ieq, resultado_interpolacion,  interpolacion_ieq, correccionGamma(interpolacion_ieq, gamma), correccionGammaIntensidad(interpolacion_ieq, gamma) ).display("Promediado|Interpolacion BiCubica");
+    CImg<double> lineal_pot_prom = linealPotencia(promedio_ieq);
+    CImg<double> lineal_pot_interp = linealPotencia(interpolacion_ieq);
+    for (unsigned int i = 1; i < transformada_mariano; i++) {
+        lineal_pot_prom = linealPotencia(lineal_pot_prom);
+        lineal_pot_interp = linealPotencia(lineal_pot_interp);
+    }
+    //Aplica la transformacion lineal potencia
+    
+    //Draw Graph
+    //lineal_pot_prom.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
+    //lineal_pot_interp.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
+    
+    (resultado_promedio, promedio_ieq
+     , resultado_interpolacion,  interpolacion_ieq
+     , lineal_pot_prom, lineal_pot_interp
+     , hb_prom, hb_interp
+     //, correccionGamma(hb_prom, gamma, A_gamma), correccionGamma(hb_interp, gamma, A_gamma)
+     //,correccionGamma(interpolacion_ieq, gamma, A_gamma), correccionGammaIntensidad(interpolacion_ieq, gamma, A_gamma) 
+    ).display("Promediado|Interpolacion BiCubica");
 
 
     return 0;

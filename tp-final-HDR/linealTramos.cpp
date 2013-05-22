@@ -1,0 +1,3 @@
+
+
+//CImg<double> linealTramos
