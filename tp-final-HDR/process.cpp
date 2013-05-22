@@ -28,6 +28,33 @@ unsigned int C;
 //Bandera
 bool leer_primera = true;
 
+
+
+//@ Cambia el canal de intesidad de una imagen RGB, y la devuelve en RGB
+template <typename T>
+CImg<T> cambiarIntesidad(CImg<T> imagen, CImg<T> intesidad) {
+    if (imagen.spectrum() == 1) 
+        return imagen;
+    
+    //Convertimos a HSI
+    CImg<T> img = imagen.get_normalize(0,1).get_RGBtoHSI();
+    
+    //Separamos los 2 canales que nos interesan
+    CImg<T> canal1 = img.get_channel(0);
+    CImg<T> canal2 = img.get_channel(1);
+
+    //Componemos
+    CImg<T> ret_val;
+    ret_val = canal1;
+    ret_val.append(canal2, 'c');
+    intesidad.normalize(0,1);
+    ret_val.append(intesidad, 'c');
+
+    return ret_val.HSItoRGB().normalize(0,255);
+}
+
+
+
 CImg<double> promediado(CImg<double> img_compuesta) {
     CImg<double> resultado(W,H,1,C);
 
@@ -151,10 +178,15 @@ int main(int argc, char *argv[]) {
     resultado_promedio.save("resultado_promedio.bmp");
     resultado_interpolacion.save("resultado_interpolacion.bmp");
 
-    salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
+    CImg<double> intensidad = resultado_promedio.get_RGBtoHSI().get_channel(2).get_equalize(256);
+    CImg<double> promedio_ieq = cambiarIntesidad(resultado_promedio, intensidad );
+
+    intensidad = resultado_interpolacion.get_RGBtoHSI().get_channel(2).get_equalize(256);
+    CImg<double> interpolacion_ieq = cambiarIntesidad(resultado_interpolacion, intensidad );
     
-    (resultado_promedio, resultado_interpolacion).display("Promediado|Interpolacion BiCubica");
+    (resultado_promedio, promedio_ieq, resultado_interpolacion, interpolacion_ieq ).display("Promediado|Interpolacion BiCubica");
 
 
+    salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
     return 0;
 }
