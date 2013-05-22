@@ -9,6 +9,7 @@
 #include "getSeeds.cpp"
 //#include "getCubicKernel.cpp"
 #include "cubicInterpolator.cpp"
+#include "correccionGamma.cpp"
 
 using namespace cimg_library;   //Necesario
 
@@ -103,6 +104,7 @@ int main(int argc, char *argv[]) {
     //Para realizar la interpolacion, se debe elegir un paso (dx,dy) desde el centro del vecindario
     const double dx = cimg_option("-x", 0.5, "Paso en x en la interpolacion");
     const double dy = cimg_option("-y", 0.5, "Paso en y en la interpolacion");
+    const double gamma = cimg_option("-g", 0.8, "Gamma de la correccion gamma");
 
 	salida<<_ejemplo<<",";
 	//Obtener las imágenes de la carpeta
