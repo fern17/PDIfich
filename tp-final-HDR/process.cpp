@@ -153,6 +153,7 @@ int main(int argc, char *argv[]) {
 	salida<<_ejemplo<<",";
 	//Obtener las imágenes de la carpeta
 	std::vector<std::string> imagenes_a_leer = getSeeds(_ejemplo, _format);
+    std::vector<bool> imagenes_existentes;
 
 	//Recorremos las imágenes leidas y las agregamos a una lista
 	//En caso de no existir alguna (faltante), la generaremos
@@ -160,8 +161,10 @@ int main(int argc, char *argv[]) {
 
 	for(unsigned int i = 0; i < _n; i++) {
 		if (imagenes_a_leer[i].compare("NOT_FOUND") == 0) { //Bandera para identificar que no existe la imagen y hay que generarla
-			// COMING SOON
+            //Coming soon
+            imagenes_existentes.push_back(false);
 		} else {
+            imagenes_existentes.push_back(true);
 			CImg<double> img_tmp(imagenes_a_leer[i].c_str());
 			
 			if (leer_primera) {
@@ -183,15 +186,16 @@ int main(int argc, char *argv[]) {
 	for (unsigned int x = 0; x < W; x++) {
 		for (unsigned int y = 0; y < H; y++ ) {
 			for (unsigned int c = 0; c < C; c++ ) {
-				img_compuesta(x*2      ,  y*2      ,0,c) = lista[3](x,y,0,c);
-				img_compuesta(x*2      ,  y*2 + 1  ,0,c) = lista[2](x,y,0,c);
-				img_compuesta(x*2 + 1  ,  y*2 + 1  ,0,c) = lista[1](x,y,0,c);
-				img_compuesta(x*2 + 1  ,  y*2      ,0,c) = lista[0](x,y,0,c);
+                //Asigna solo si la encuentra
+				if (imagenes_existentes[3]) img_compuesta(x*2      ,  y*2      ,0,c) = lista[3](x,y,0,c);
+				if (imagenes_existentes[2]) img_compuesta(x*2      ,  y*2 + 1  ,0,c) = lista[2](x,y,0,c);
+				if (imagenes_existentes[1]) img_compuesta(x*2 + 1  ,  y*2 + 1  ,0,c) = lista[1](x,y,0,c);
+				if (imagenes_existentes[0]) img_compuesta(x*2 + 1  ,  y*2      ,0,c) = lista[0](x,y,0,c);
 			}
 		}
-
 	}
-	
+
+    //Calculamos los resultados con los dos metodos
     CImg<double> resultado_promedio = promediado(img_compuesta);
     CImg<double> resultado_interpolacion = interpolacion(img_compuesta, dx, dy);
 
