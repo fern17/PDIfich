@@ -211,7 +211,7 @@ int main(int argc, char *argv[]) {
     // CImg<double> hb = highBoosting(15.8, resultado_promedio, mascara);
 
 
-    (resultado_promedio, promedio_ieq, resultado_interpolacion, interpolacion_ieq, resultado_interpolacion + interpolacion_ieq / 2  ).display("Promediado|Interpolacion BiCubica");
+    (resultado_promedio, promedio_ieq, resultado_interpolacion,  interpolacion_ieq, correccionGamma(interpolacion_ieq, gamma), correccionGammaIntensidad(interpolacion_ieq, gamma) ).display("Promediado|Interpolacion BiCubica");
 
 
     return 0;
