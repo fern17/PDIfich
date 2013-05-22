@@ -31,6 +31,20 @@ bool leer_primera = true;
 
 
 
+CImg<double> highBoosting(double A, CImg<double> & imagen, CImg<double> & mascara) {
+
+    CImg<double> ret_val;
+    
+
+    cimg_forC(imagen, c) {
+        CImg<double> canal = imagen.get_channel(c);
+        ret_val.append(A*canal + canal.get_convolve(mascara), 'c' );  
+    }
+
+    return ret_val;
+
+}
+
 //@ Cambia el canal de intesidad de una imagen RGB, y la devuelve en RGB
 template <typename T>
 CImg<T> cambiarIntesidad(CImg<T> imagen, CImg<T> intesidad) {
@@ -186,9 +200,17 @@ int main(int argc, char *argv[]) {
     intensidad = resultado_interpolacion.get_RGBtoHSI().get_channel(2).get_equalize(256);
     CImg<double> interpolacion_ieq = cambiarIntesidad(resultado_interpolacion, intensidad );
     
-    (resultado_promedio, promedio_ieq, resultado_interpolacion, interpolacion_ieq ).display("Promediado|Interpolacion BiCubica");
-
-
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
+
+
+    // CImg<double> mascara(3,3,1,1,-1);
+    // mascara(1,1) = 18;
+
+    // CImg<double> hb = highBoosting(15.8, resultado_promedio, mascara);
+
+
+    (resultado_promedio, promedio_ieq, resultado_interpolacion, interpolacion_ieq, resultado_interpolacion + interpolacion_ieq / 2  ).display("Promediado|Interpolacion BiCubica");
+
+
     return 0;
 }
