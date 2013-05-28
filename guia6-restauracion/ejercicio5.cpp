@@ -7,11 +7,12 @@
 #include "../utils/fourier.cpp"
 #include "../utils/PDI_functions.h"
 #include "../utils/filtradoFrecuencia.cpp"
+#include <cassert>
 using namespace cimg_library;   //Necesario
 
 #define EPS 0.00001
 
-//
+//@ Aplica el filtrado de Wiener para un filtro pasado por parametro
 CImg<double> filtradoWiener(CImg<double> img, CImgList<double> filtro, double K) {
     unsigned int w = img.width();
     unsigned int h = img.height();
@@ -100,14 +101,31 @@ CImgList<double> filtroMovimiento(unsigned int w, unsigned int h, double a, doub
     return img;
 }
 
+CImg<double> filtradoInverso(CImgList<double> img, CImgList<double> filtro, double epsilon) {
+    assert(img.is_sameXY(filtro));
+    CImgList<double> resultado(2,img[0].width(), img[0].height(), 1, img[0].spectrum(), 0.0);
+    cimg_forXY(img[0], u, v) {
+        std::complex<double> parte_img(img[0](u,v), img[1](u,v));
+        std::complex<double> parte_filtro(filtro[0](u,v), filtro[1](u,v));
+        if (not (fabs(real(parte_filtro)) < epsilon and fabs(imag(parte_filtro)))) { //si no son cero ambos
+            std::complex<double> res = parte_img/parte_filtro;
+            resultado[0](u,v) = real(res);
+            resultado[1](u,v) = imag(res);
+        }
+    }
+    return resultado.get_FFT(true)[0];
+}
+
+
 int main(int argc, char *argv[]) {
     //@ Realiza un filtro de movimiento y le aplica el filtro de Wiener con parametro K
     const char* input = cimg_option("-i", "../images/huang3_movida.tif", "Input Image File");
-    const char* input2 = cimg_option("-i", "../images/huang3.jpg", "Input Image File");
+    const char* input2 = cimg_option("-j", "../images/huang3.jpg", "Input Image File");
     const float _a = cimg_option("-a", 1.0, "Input Image File");
     const float _b = cimg_option("-b", 1.0, "Input Image File");
 	const float _t = cimg_option("-t", 1.0, "Input Image File");
 	const float _K = cimg_option("-k", 1.0, "Input Image File");
+	const double epsilon = cimg_option("-e", 0.0001, "Input Image File");
 
     std::cout<<"Parametros:\na = "<<_a<<"\tb = "<<_b<<"\tT = "<<_t<<"\tK = "<<_K<<"\n";
 
@@ -115,13 +133,17 @@ int main(int argc, char *argv[]) {
     CImg<double> original(input2);
 
     //Realizamos el filtro
-    CImgList<double> filtro = filtroMovimiento(img.width(), img.height(), _a, _b, _t);
+    CImgList<double> filtro = filtroMovimiento(original.width(), original.height(), _a, _b, _t);
+    CImg<double> movida = utils::filtradoFrecuencia(original, filtro);
+
+    //Filtramos con el filtro inverso
+    CImg<double> filtrada = filtradoInverso(movida.get_FFT(), filtro, epsilon);
 
     //Filtramos con el filtro de Wiener
-    CImg<double> filtrada = filtradoWiener(img, filtro, _K); 
+    //CImg<double> filtrada = filtradoWiener(img, filtro, _K); 
     
     //Dibujamos
-    (filtro[0], filtro[1], utils::get_magnitud(filtro), img, filtrada, original).display();
+    (filtro[0], filtro[1], movida, filtrada, original).display();
 
     return 0;
 }

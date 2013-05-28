@@ -107,6 +107,14 @@
 	./guia1-introduccion/ejercicio1.cpp
 //@ Toma un nombre de imagen en input, recorta desde (x0,y0) hasta (xf,yf) y la guarda en output
 
+	./tp-final-HDR/getCubicKernel.cpp
+
+	./tp-final-HDR/cubicInterpolator.cpp
+
+	./tp-final-HDR/getSeeds.cpp
+
+	./tp-final-HDR/process.cpp
+
 	./guia2-operaciones-puntuales/ejercicio4.cpp
 //@ Aplica el filtro emboss a la imagen con el corrimiento pasado por parametros
 //@ Aplica el filtro emboss
@@ -161,6 +169,19 @@
 //@ Crea una imagen binaria con la linea identidad. Luego toma entrada del usuario para cambiar la pendiente
 //@ Aplicacion de transformadas lineales y transformadas lineales por tramos a imagenes
 
+	./guia7-segmentacion/ejercicio1.cpp
+//@ Devuelve el operador de Roberts para el gradiente en X [0] e Y [1]
+//@ Devuelve el operador de Prewitt para el gradiente en las 4 direcciones
+//@ Devuelve el operador de Sobel para el gradiente en las 4 direcciones
+//@ Devuelve una mascara llena de -1 excepto en el centro donde tiene un 8
+//@ Devuelve una mascara de 3x3 con un 4 en el medio y cuatro -1 en los extremos
+//@ Devuelve la mascara de 5x5 para el LoG
+//@ Toma una lista de imagenes y le aplica el umbral especificado a cada imagen
+//@ Aplica el operador derivada segun el parametro opcion
+//@ Genera los operadores de Gradiente y Laplaciano y los aplica a una imagen
+//@ Aplica ruido y luego aplica los operadores derivada
+//@ Lee una imagen y le aplica los distintos operadores de derivada
+
 	./utils/filtradoFrecuencia.cpp
 //@ Genera un filtro ideal con el radio especificado (frecuencia de corte)
 //@ Genera un filtro de Butterworth del orden y frecuencia de corte dados
@@ -186,7 +207,18 @@
 //@ Obtiene las coordenadas de bresenham para dado un punto inicial y final, y los tamaños de la imagen. Los devuelve en un vector<vector<uint>>. Codigo robado de internet
 
 	./guia6-restauracion/ejercicio4.cpp
-//@ 
+//@ Genera una máscara con un filtro rechazabanda entre las frecuencias f0 y ff
+//@ Lee los centros de circulos desde un archivo
+//@ Lee los radios de los circulos desde un archivo
+//@ Realiza un filtro rechaza banda ideal con ancho W y ubicado al radio especificado D0
+//@ Realiza un filtro rechaza banda de Butterworth con ancho W y ubicado al radio especificado
+//@ Realiza un filtro rechaza banda Gaussiano con ancho W y ubicado al radio especificado
+//@ Realiza un filtro notch para un vector de centros y radios
+//@ Aplica filtro notch pero no anda 
+
+	./guia6-restauracion/ejercicio5.cpp
+//@ Devuelve un filtro de movimiento (pagina 260)
+//@ Realiza un filtro de movimiento y le aplica el filtro de Wiener con parametro K
 
 	./guia6-restauracion/ejercicio2.cpp
 //@ Devuelve el vecindario centrado en x0,y0 y de tamanio step_x*2 x step_y*2...
@@ -197,6 +229,11 @@
 //@ Aplica el filtro de medias, para un Q determinado. Llama a los otros filtros de medias segun el parametro tipo:
 //@ Cambia el canal de intesidad de una imagen RGB, y la devuelve en RGB
 //@ Calcula los filtros de medias para una imagen
+
+	./guia6-restauracion/ejercicio6.cpp
+//@ Funcion (aux) que dado un vecindario nos devuelve la menor distancia entre c/u de los puntos
+//@ Función que calcula como un filtro de mediana para espacios de mas de 1D por ejemplo para aplicar sobre imágenes a color.
+//@ Aplica el filtro de mediana generalizada para imagenes color  
 
 	./guia6-restauracion/ejercicio3.cpp
 //@ Devuelve el vecindario centrado en x0,y0 y de tamanio step_x*2 x step_y*2...
