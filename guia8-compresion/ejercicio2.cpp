@@ -51,7 +51,7 @@ CImg<bool> getRLCInverse(std::vector<unsigned int> & v) {
             if (pos >= v.size()) {
                 break;
                 //std::cout<<"Error en la compresion, fuera de rango\n";
-                return retval;
+                //return retval;
             }
             else 
                 restantes = v[pos]; //nuevo contador
