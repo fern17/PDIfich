@@ -4,9 +4,11 @@
 #include <vector>
 #include <cassert>
 #include <fstream>
+#include <string>
 using namespace cimg_library;   //Necesario
 
 
+//@ Realiza la codificacion RLC a partir de una imagen binaria
 std::vector<unsigned int> getRLC(CImg<bool> & imgbinaria) {
     bool contando_el = 0;
     unsigned int contador = 0;
@@ -28,6 +30,11 @@ std::vector<unsigned int> getRLC(CImg<bool> & imgbinaria) {
     return retval;
 }
 
+//@ Realiza la descodificacion RLC a partir de un vector de repeticiones
+//Se asume que el primer valor es el valor inicial
+//El segundo valor es el ancho
+//El tercer valor es el alto
+//A partir del 4to estan las repeticiones, iniciando con el valor inicial especificado
 CImg<bool> getRLCInverse(std::vector<unsigned int> & v) {
     bool contando_el = v[0];
     unsigned int contador = 0;
@@ -35,99 +42,108 @@ CImg<bool> getRLCInverse(std::vector<unsigned int> & v) {
     unsigned int h = v[2];
 
     CImg<bool> retval(w,h);
-    unsigned int xx = 0;
-    unsigned int yy = 0;
 
-    for (unsigned int i = 3; i < v.size(); i++) {
-        int faltan = v[i];
-        if (faltan == 0) {
-            contando_el = !contando_el;
-            continue;
-        } 
-        //std::cout<<faltan<<' '<<contando_el<<'\n'; std::getchar();
-        for (unsigned int x = xx; x < w && faltan > 0; x++) {
-            for (unsigned int y = yy; y < h && faltan > 0; y++) {
-        		retval(x,y) = contando_el;
-        		faltan--;
-                xx++;
-                yy++; //this is wrong
-                xx = xx % w;
-                yy = yy % h; //this too
-        		if (faltan == 0) {
-        		    contando_el = !contando_el;
-        		    //faltan = 0; //para evitar qeu entre en el otro if
-        		}                
+    unsigned int pos = 3;
+    int restantes = v[pos];
+    cimg_forXY(retval,x,y) {
+        if (restantes == 0) {
+            pos++;
+            if (pos >= v.size()) {
+                break;
+                //std::cout<<"Error en la compresion, fuera de rango\n";
+                return retval;
             }
+            else 
+                restantes = v[pos]; //nuevo contador
+            contando_el = !contando_el; //invertimos
         }
+        retval(y,x) = contando_el;
+        restantes--;
     }
-    
     return retval;
 }
 
-void printVector(std::vector<unsigned int> v) {
-    std::cout<<"Vector size = "<<v.size()<<'\n';
-    for (unsigned int i = 0; i < v.size(); i++)
-        std::cout<<v[i]<<' ';
-    std::cout<<'\n';
+CImg<bool> binarizar(CImg<unsigned int> imagen, unsigned int umbral) {
+    CImg<bool> imagen_binaria(imagen.width(), imagen.height(), 1, 1, 0);
+    
+    //Binarizamos la imagen
+    cimg_forXY(imagen, x, y) {
+        if (imagen(x,y) > umbral)
+            imagen_binaria(x,y) = true;
+    }
+    return imagen_binaria;
+}
+
+//@ Comprime una imagen escala de gris a RLC con el nombre que se le pasa, el umbral de binarizacion especificado y el valor de inicio dado
+CImg<bool> RLCCompression(CImg<double> img, unsigned int umbral, std::string filename, bool inicio = false) {
+
+    //Binarizamos
+    CImg<bool> imagen_binaria = binarizar(img, umbral);
+
+    //Obtenemos el vector a comprimir
+    std::vector<unsigned int> rlc = getRLC(imagen_binaria);
+    //Insertamos: [inicio, ancho, alto, ...] (se insertan al reves)
+    rlc.insert(rlc.begin(), imagen_binaria.height() ); //alto
+    rlc.insert(rlc.begin(), imagen_binaria.width() ); //ancho
+    rlc.insert(rlc.begin(), 0 ); //comienza con
+
+    //Guardamos el vector de compresion
+    //Abre el archivo
+    std::ofstream file(filename.c_str(), std::ios::binary | std::ios::trunc | std::ios::out );
+    //Patea si no esta abierto
+    assert(file.is_open());
+    //Escribe el vector entero
+    file.write(reinterpret_cast<char *>(& rlc[0]), rlc.size()*sizeof(rlc[0]) );
+    //Cerramos
+    file.close();
+    return imagen_binaria;
+}
+
+//@ Realiza todos los pasos para descomprimir una imagen a partir de un archivo con codificacion RLC
+CImg<bool> RLCDecompression(std::string filename) {
+    //Ahora leemos el archivo comprimido y tratamos de descomprimirlo
+    //
+    //Leemos
+    std::ifstream f(filename.c_str(), std::ios::binary | std::ios::in );
+    
+    //Movemos el puntero al final para saber cuanto tamaño tiene
+    f.seekg(0, std::ifstream::end);
+    unsigned int tamano = f.tellg();
+    //Lo volvemos al principio para hacer una lectura secuencial
+    f.seekg(0, std::ifstream::beg);
+
+    //Creamos el vector que leera la imagen comprimida, del tamaño que nos dio el paso anterior
+    std::vector<unsigned int> lectura;
+    lectura.resize(tamano/(sizeof(unsigned int)));
+    
+    //Lee el contenido entero del archivo al vector
+    f.read((char *) &lectura.front(), lectura.size()*sizeof(lectura.front()));
+    //Cerrramos el archivo
+    f.close();
+   
+    //A partir del vector, reconstruimos la imagen
+    CImg<bool> img_leida;
+    img_leida = getRLCInverse(lectura);
+    return img_leida;
 }
 
 int main(int argc, char *argv[]) {
     const char* _input = cimg_option("-i", "../images/cameraman.tif", "Input Image File");
     const unsigned int _umbral = cimg_option("-u", 100.0, "Input Image File");
+    const bool inicio = cimg_option("-s", false, "Valor de inicio");
 
-
+    std::string filename = "ej2-rlc.jpg";
+    //Leemos la imagen
     CImg<double> imagen(_input);
-    CImg<bool> imagen_binaria(imagen.width(), imagen.height(), 1, 1, 0);
-
+    //Comprimimos
+    CImg<double> imagen_binaria = RLCCompression(imagen,_umbral, filename, inicio);
+  
+    //Descomprimimos
+    CImg<bool> img_leida = RLCDecompression(filename);
     
-    cimg_forXY(imagen, x, y) {
-        if (imagen(x,y) > _umbral)
-            imagen_binaria(x,y) = true;
-    }
-
-
+    std::cerr<<"Error en la compresion-descompresion = "<<img_leida.MSE(imagen_binaria)<<"\n\n\n";
     
-    std::vector<unsigned int> rlc = getRLC(imagen_binaria);
-    rlc.insert(rlc.begin(), imagen_binaria.height() ); //alto
-    rlc.insert(rlc.begin(), imagen_binaria.width() ); //ancho
-    rlc.insert(rlc.begin(), 0 ); //comienza con
-
-
-    //Guardamos
-    std::ofstream file("ej2-rlc.jpg", std::ios::binary | std::ios::trunc | std::ios::out );
-
-    assert(file.is_open());
-
-    file.write(reinterpret_cast<char *>(& rlc[0]), rlc.size()*sizeof(rlc[0]) );
-    //file.write(&rlc[0], rlc.size());
-    file.close();
-
-    //printVector(rlc);
-
-    //Leemos
-    std::ifstream f("ej2-rlc.jpg", std::ios::binary | std::ios::in );
-    f.seekg(0, std::ifstream::end);
-    unsigned int tamano = f.tellg();
-    f.seekg(0, std::ifstream::beg);
-
-    std::vector<unsigned int> lectura;
-    lectura.resize(tamano/(sizeof(unsigned int)));
-    
-    //f.read(reinterpret_cast<char *> (& lectura[0]), tamano);
-    f.read((char *) &lectura.front(), lectura.size()*sizeof(lectura.front()));
-    f.close();
-    
-    printVector(lectura);
-    
-    CImg<bool> img_leida;
-    img_leida = getRLCInverse(lectura);
-    
-    CImg<unsigned char> img_leida2(img_leida.width(), img_leida.height(),1,1,0);
-    cimg_forXY(img_leida,x,y) {
-        if (img_leida(x,y))
-            img_leida2(x,y) = 255;
-    }
-    img_leida2.display();
+    (imagen_binaria.get_normalize(0,255), img_leida.get_normalize(0,255)).display();
 
     return 0;
 }
