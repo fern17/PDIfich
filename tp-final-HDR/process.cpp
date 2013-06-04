@@ -75,7 +75,7 @@ CImg<double> promediado(CImg<double> img_compuesta) {
     //Recorre la imagen y promedia los valores
     for (unsigned int x = 0; x < img_compuesta.width(); x+=2) {
         for (unsigned int y = 0; y < img_compuesta.height(); y+=2) {
-            if (x % 100 == 0 && y % 100 == 0) std::cout<<x<<' '<<y<<'\n';
+            if (x % 533 == 0 && y % 499 == 0) std::cout<<x<<' '<<y<<'\n';
             
             CImg<double> vecindario = img_compuesta.get_crop(x,y,x+4,y+4);
             //Para cada canal
@@ -112,7 +112,7 @@ CImg<double> interpolacion(CImg<double> img_compuesta, double dx = 0.5, double d
 
     for (unsigned int x = 0; x < img_compuesta.width(); x+=2) {
         for (unsigned int y = 0; y < img_compuesta.height(); y+=2) {
-            if (x % 100 == 0 && y % 100 == 0) std::cout<<x<<' '<<y<<'\n';
+            if (x % 366 == 0 && y % 297 == 0) std::cout<<x<<' '<<y<<'\n';
             //Obtenemos un vecindario
             CImg<double> vecindario = img_compuesta.get_crop(x,y,x+4,y+4);
             
@@ -179,6 +179,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
+    lista.display();
 	//Declaramos la imagen compuesta
 	CImg<double> img_compuesta(2*W, 2*H, 1, C, 0 );
 
@@ -217,6 +218,7 @@ int main(int argc, char *argv[]) {
 
     CImg<double> lineal_pot_prom = linealPotencia(promedio_ieq);
     CImg<double> lineal_pot_interp = linealPotencia(interpolacion_ieq);
+    //Se aplica varias veces la transformada
     for (unsigned int i = 1; i < transformada_mariano; i++) {
         lineal_pot_prom = linealPotencia(lineal_pot_prom);
         lineal_pot_interp = linealPotencia(lineal_pot_interp);
@@ -230,10 +232,11 @@ int main(int argc, char *argv[]) {
     (resultado_promedio, promedio_ieq
      , resultado_interpolacion,  interpolacion_ieq
      , lineal_pot_prom, lineal_pot_interp
-     , hb_prom, hb_interp
+     //, hb_prom, hb_interp
      //, correccionGamma(hb_prom, gamma, A_gamma), correccionGamma(hb_interp, gamma, A_gamma)
      //,correccionGamma(interpolacion_ieq, gamma, A_gamma), correccionGammaIntensidad(interpolacion_ieq, gamma, A_gamma) 
-    ).display("Promediado|Interpolacion BiCubica");
+    ).display("Promedio|PromedioEcu|Interpolacion|InterpolacionEcu|PromLinealPot|InterLinealPot");
+        //|PromHB|InterHB");
 
 
     return 0;
