@@ -1,3 +1,7 @@
+#Basuritas de QT
+build-*
+*.pro.user
+
 # Compiled Object files
 *.slo
 *.lo

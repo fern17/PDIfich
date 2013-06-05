@@ -156,7 +156,6 @@ unsigned int contarValor(CImg<T> imagen, T valor) {
 }
 
 
-
 int main(int argc, char *argv[]) {
     //@ Lee una imagen y le aplica los distintos operadores de derivada
  	const char* _input = cimg_option("-i", "../img/cervezas/01.jpg", "Input Image File");
