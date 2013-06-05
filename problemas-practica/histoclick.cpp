@@ -32,7 +32,7 @@ float dist(click c1, click c2) {
 
 //@ Registra los dos clicks y al tenerlos, dibuja el histograma del recuadro
 template<typename T>
-void loopDisplayAndClick(CImg<T> img, std::string title = "titulo") {
+void loopDisplayAndClick(CImg<T> img, unsigned int canal_a_histogramizar = 0, std::string title = "titulo") {
     CImgDisplay ventana(img, title.c_str());   //Crea una ventana y dibuja la imagen...
     
     while ( not ventana.is_closed() && not ventana.is_keyQ()) {
@@ -51,11 +51,26 @@ void loopDisplayAndClick(CImg<T> img, std::string title = "titulo") {
                 
                 //Como ya tenemos dos clicks, estamos listos para calcular el histograma
                 CImg<T> cropeada = img.get_crop(click1.x, click1.y, click2.x, click2.y);
-                CImg<T> histograma = cropeada.get_histogram(256);
+                CImg<T> canal1 = cropeada.get_channel(0);
+                CImg<T> histograma1 = canal1.get_histogram(256);
+                CImg<T> histograma2;
+                CImg<T> histograma3;
+                if (img.spectrum() == 3) {
+                    CImg<T> canal2 = cropeada.get_channel(1);
+                    CImg<T> canal3 = cropeada.get_channel(2);
+                    histograma2 = canal2.get_histogram(256);
+                    histograma3 = canal3.get_histogram(256);
+                }
             
                 //Dibuja el histograma y la imagen cropeada
+            
                 CImgDisplay ventana2 (cropeada, "Corte");   
-                histograma.display_graph(0,3);
+                histograma1.display_graph(0,3);
+                if (img.spectrum() == 3) {
+                    histograma2.display_graph(0,3);
+                    histograma3.display_graph(0,3);
+                }
+                //histograma.display_graph(0,3);
             }
             CANTIDAD_CLICK++;
             if (CANTIDAD_CLICK == 2) //acotamos para evitar overflow
