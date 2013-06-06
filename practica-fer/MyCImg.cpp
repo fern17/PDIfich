@@ -76,6 +76,12 @@ void getPuntosCardinales(CImg<double> img, std::vector<unsigned int> & cardinali
 CImg<float> cargar_paleta(const char* filename);
 template<typename T> void printVector(std::vector<T> V) ;
 
+//Auxiliares o agregadas por Mari
+bool pixel_es_mayor(pixel a, pixel b);
+std::vector<pixel> getNMayores(CImg<double>  & though , unsigned int cantidad);
+bool es_deseada(CImg<T> v_evaluar, CImg<T> v_referencia, T delta_local);
+bool esta_adentro( T valor,  T min,  T max);
+
 //Enmascaramiento
 CImg<bool> mascaraRectangular(unsigned int w, unsigned int h, unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1);
 CImg<unsigned char> aplicarMascara(CImg<unsigned char> & img1, CImg<bool> & mascara);
@@ -1493,6 +1499,78 @@ double houghRho(CImg<double> img) {
     double rho = ((2.0*diag) / double(img.height()))*double(_rho) - diag;
     return rho;
 }
+
+
+// Devuelve si un valor está dentro del rango (min, max)
+template<typename T>
+bool esta_adentro( T valor,  T min,  T max) {
+    if (min > max) {
+        T tempay = min;
+        min = max;
+        max = tempay;
+    }   
+    return (valor < max) && (valor > min || fabs(valor - min) < 0.00001 );
+}
+
+
+//***** bool es_deseada *****
+// Dado un píxel de referencia y uno a evaluar
+// los compara independientemente de la cantidad de canales que tenga
+// en base a un umbral delta_local
+
+// ---------Entradas------
+// v_evaluar        : pixel a evaluar. Se puede obtener con imagen.get_crop(x,x,y,y)
+// v_referencia    :  pixel de referencia
+// delta_local : umbral de variacion admisible pixel a pixel canal a canal
+// ---------Salidas------
+// verdadero si cumple con la condición
+template<typename T>
+bool es_deseada(CImg<T> v_evaluar, CImg<T> v_referencia, T delta_local) {
+    assert( v_referencia.size() == v_evaluar.size() && v_referencia.spectrum() == v_evaluar.spectrum() );
+    bool deseada = true;
+    cimg_forC(v_evaluar, c) {
+        T rango_superior = v_referencia(0,0,0,c) + delta_local;
+        if (rango_superior > 255)
+            rango_superior = 255; 
+        
+        T rango_inferior = v_referencia(0,0,0,c) - delta_local;
+        if (rango_inferior < 0)
+            rango_inferior = 0; 
+
+        deseada = deseada && esta_adentro(v_evaluar(0,0,0,c), rango_inferior , rango_superior + 1 );
+    }
+    return deseada;
+}
+
+
+
+//Estructura necesaria para poder hacer ordenamiento de los mayores N pixeles en por ejemplo una T de hough
+struct pixel {
+    unsigned int x;
+    unsigned int y;
+    double valor;
+};
+
+bool pixel_es_mayor(pixel a, pixel b) { return a.valor > b.valor; }
+
+
+std::vector<pixel> getNMayores(CImg<double>  & though , unsigned int cantidad) {
+    std::vector<pixel> v;
+
+    cimg_forXY(though,x, y) {
+        pixel t;
+        t.x = x;
+        t.y = y;
+        t.valor = though(x,y);
+        v.push_back(t);
+    }
+    std::sort(v.begin(), v.end(), pixel_es_mayor);
+
+    v.erase(v.begin() + cantidad );
+    return v;
+}
+
+
 
 
 //***** Crecimiento de regiones para color *****
