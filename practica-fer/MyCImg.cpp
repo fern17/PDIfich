@@ -58,6 +58,13 @@ std::string intToStr(int t){
     return s;
 }
 
+double radToReg(double rad) {
+    return rad*180.0/M_PI;
+}
+
+double degToRad(double deg) {
+    return deg*M_PI/180.0;
+}
 //=========================================================================================================================== 
 //=========================================================================================================================== 
 
@@ -170,6 +177,8 @@ template<typename T> CImg<int> crecimientoRegiones(CImg<T> imagen,  int seed_x, 
 //Hough
 template<typename T> std::vector<unsigned int> coordHoughToImg(CImg<T> imagen, unsigned int _tita, unsigned int _rho); 
 CImg<double> hough(CImg<double> img, bool inverse); 
+double houghAngulo(CImg<double> img);
+double houghRho(CImg<double> img);
 
 //=========================================================================================================================== 
 //=========================================================================================================================== 
