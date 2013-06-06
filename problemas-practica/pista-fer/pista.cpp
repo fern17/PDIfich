@@ -69,8 +69,9 @@ int main(int argc, char *argv[]) {
         gradiente.normalize(0.0,255.0);
         
         CImg<double> binaria = binarizar(gradiente, umbral);
-
-        CImg<double> t_hough = hough(binaria);
+        CImg<double> fourier = binaria.get_FFT()[0].normalize(0,255);
+        fourier.display();
+        CImg<double> t_hough = hough(fourier);
         double maximo = t_hough.max();
         double tita = 0;
         double rho = 0;
@@ -82,44 +83,9 @@ int main(int argc, char *argv[]) {
                 break;
             }
         }
-        std::vector<unsigned int> val = utils::coordHoughToImg(imagen, tita, rho);
-        double step_tita = M_PI/double(imagen.width()-1.0);
-        double diagonal = std::sqrt(std::pow(imagen.width()-1,2) + std::pow(imagen.height()-1,2));
-        double step_rho = 2.0*diagonal/double(imagen.height()-1);
-        //Actualiza tita y rho a valores reales
-        tita = tita*step_tita - M_PI/2.0; 
-        rho = rho*step_rho - diagonal;
+        std::vector<unsigned int> coord_recta = utils::coordHoughToImg(imagen, tita, rho);
 
-        unsigned int x0;
-        unsigned int x1;
-        unsigned int y0;
-        unsigned int y1;
-        unsigned int M = imagen.width();
-        unsigned int N = imagen.height();
-
-        if (tita>-M_PI/2 && tita<M_PI/2){
-            y0 = 0; 
-            y1 = M-1;
-            x0 = rho/cos(tita);      // calcula y para y=0
-            x1 = rho/cos(tita)-(M-1)*tan(tita); // calcula y para y=M-1	  
-	    }else{
-	        x0 = 0; 
-            x1 = N-1;
-            y0 = rho/sin(tita);      // calcula y para x=0
-            y1 = rho/sin(tita)-(N-1)/tan(tita); // calcula y para x=M-1
-	    }
-	//cout<<endl<<"("<<t<<","<<r<<")->("<<theta<<","<<rho<<") "<<"("<<y0<<","<<x0<<")->("<<y1<<","<<x1<<")"<<endl;
-        //iHough.draw_line(y0,x0,y1,x1,blanco); // dibuja una línea de (0,y0) a (M-1,y1)
-/*
-        //double mm = -cos(tita)/sin(tita);
-        //double bb = rho/sin(tita);
-        double mm = -sin(tita)/cos(tita);
-        double bb = rho/cos(tita);
-        int y0 = trunc(bb);
-        int yf = trunc(bb - double(imagen.height())*mm);
-        */
-        filtrada.draw_line(y0,x0,y1,x1, rojo);
-        std::cerr<<"Rho = "<<rho<<"\t tita = "<<tita<<"\t y0 = "<<y0<<"\t y1 = "<<y1<<'\n';
+        filtrada.draw_line(coord_recta[0],coord_recta[1],coord_recta[2],coord_recta[3], rojo);
 
         (imagen, filtrada, binaria, t_hough
          ).display();
