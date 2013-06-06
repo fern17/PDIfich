@@ -58,6 +58,13 @@ std::string intToStr(int t){
     return s;
 }
 
+double radToReg(double rad) {
+    return rad*180.0/M_PI;
+}
+
+double degToRad(double deg) {
+    return deg*M_PI/180.0;
+}
 //=========================================================================================================================== 
 //=========================================================================================================================== 
 
@@ -74,6 +81,14 @@ CImg<unsigned char> getZonaInteres(CImg<unsigned char> img, unsigned char color_
 template<typename T> unsigned int contarValor(CImg<T> imagen, T valor); 
 void getPuntosCardinales(CImg<double> img, std::vector<unsigned int> & cardinalidades, double umbral); 
 CImg<float> cargar_paleta(const char* filename);
+template<typename T> void printVector(std::vector<T> V) ;
+void enfocarImagen( CImg<double> &img, double lim );
+
+//Auxiliares o agregadas por Mari
+bool pixel_es_mayor(pixel a, pixel b);
+std::vector<pixel> getNMayores(CImg<double>  & though , unsigned int cantidad);
+bool es_deseada(CImg<T> v_evaluar, CImg<T> v_referencia, T delta_local);
+bool esta_adentro( T valor,  T min,  T max);
 
 //Enmascaramiento
 CImg<bool> mascaraRectangular(unsigned int w, unsigned int h, unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1);
@@ -163,10 +178,32 @@ template<typename T> CImg<int> crecimientoRegiones(CImg<T> imagen,  int seed_x, 
 //Hough
 template<typename T> std::vector<unsigned int> coordHoughToImg(CImg<T> imagen, unsigned int _tita, unsigned int _rho); 
 CImg<double> hough(CImg<double> img, bool inverse); 
+double houghAngulo(CImg<double> img);
+double houghRho(CImg<double> img);
 
 //=========================================================================================================================== 
 //=========================================================================================================================== 
+template<typename T> void printVector(std::vector<T> V) {
+    for (unsigned int i = 0; i < V.size(); i++) {
+        std::cout<<V[i]<<' ';
+    }
+    std::cout<<'\n';
+}
 
+void enfocarImagen( CImg<double> &img, double lim ) {
+    int xmin=img.width(), xmax=0, ymin=img.height(), ymax=0;
+    for( int j=0; j<img.height(); j++ ) { 
+        for( int i=0; i<img.width(); i++ ) {
+            if( img(i,j,0,0)+img(i,j,0,1)+img(i,j,0,2) < lim*3 ) {
+                if( xmin > i ) xmin=i;
+                if( xmax < i ) xmax=i;
+                if( ymin > j ) ymin=j;
+                if( ymax < j ) ymax=j;
+            }
+        }
+    }
+    img.crop( xmin,ymin,xmax,ymax );
+}
 
 //@ Registra los dos clicks y al tenerlos, dibuja el histograma del recuadro
 template<typename T> 
@@ -1458,6 +1495,107 @@ std::vector<unsigned int> coordHoughToImg(CImg<T> imagen, unsigned int _tita, un
     retval.assign(&ret_val[0], &ret_val[0]+4);
     return retval;
 }
+
+//@ Devuelve el angulo en grados donde se halla el mayor
+double houghAngulo(CImg<double> img) {
+    double maxi = img.max();
+    unsigned int tita;
+    cimg_forXY(img,x,y) {
+        if (fabs(img(x,y) - maxi) < EPS) {
+            tita = x;
+            break;
+        }
+    }
+    double angulo = (180.0 / double(img.width())) * double(tita) - 90.0;
+    return angulo;
+}
+
+//@ Devuelve el rho del mayor valor, en distancia imagen
+double houghRho(CImg<double> img) {
+    double maxi = img.max();
+    unsigned int _rho;
+    cimg_forXY(img,x,y) {
+        if (fabs(img(x,y) - maxi) < EPS) {
+            _rho = y;
+            break;
+        }
+    }
+    double diag = sqrt(pow(img.width(),2) + pow(img.height(),2));
+    double rho = ((2.0*diag) / double(img.height()))*double(_rho) - diag;
+    return rho;
+}
+
+
+// Devuelve si un valor está dentro del rango (min, max)
+template<typename T>
+bool esta_adentro( T valor,  T min,  T max) {
+    if (min > max) {
+        T tempay = min;
+        min = max;
+        max = tempay;
+    }   
+    return (valor < max) && (valor > min || fabs(valor - min) < 0.00001 );
+}
+
+
+//***** bool es_deseada *****
+// Dado un píxel de referencia y uno a evaluar
+// los compara independientemente de la cantidad de canales que tenga
+// en base a un umbral delta_local
+
+// ---------Entradas------
+// v_evaluar        : pixel a evaluar. Se puede obtener con imagen.get_crop(x,x,y,y)
+// v_referencia    :  pixel de referencia
+// delta_local : umbral de variacion admisible pixel a pixel canal a canal
+// ---------Salidas------
+// verdadero si cumple con la condición
+template<typename T>
+bool es_deseada(CImg<T> v_evaluar, CImg<T> v_referencia, T delta_local) {
+    assert( v_referencia.size() == v_evaluar.size() && v_referencia.spectrum() == v_evaluar.spectrum() );
+    bool deseada = true;
+    cimg_forC(v_evaluar, c) {
+        T rango_superior = v_referencia(0,0,0,c) + delta_local;
+        if (rango_superior > 255)
+            rango_superior = 255; 
+        
+        T rango_inferior = v_referencia(0,0,0,c) - delta_local;
+        if (rango_inferior < 0)
+            rango_inferior = 0; 
+
+        deseada = deseada && esta_adentro(v_evaluar(0,0,0,c), rango_inferior , rango_superior + 1 );
+    }
+    return deseada;
+}
+
+
+
+//Estructura necesaria para poder hacer ordenamiento de los mayores N pixeles en por ejemplo una T de hough
+struct pixel {
+    unsigned int x;
+    unsigned int y;
+    double valor;
+};
+
+bool pixel_es_mayor(pixel a, pixel b) { return a.valor > b.valor; }
+
+
+std::vector<pixel> getNMayores(CImg<double>  & though , unsigned int cantidad) {
+    std::vector<pixel> v;
+
+    cimg_forXY(though,x, y) {
+        pixel t;
+        t.x = x;
+        t.y = y;
+        t.valor = though(x,y);
+        v.push_back(t);
+    }
+    std::sort(v.begin(), v.end(), pixel_es_mayor);
+
+    v.erase(v.begin() + cantidad );
+    return v;
+}
+
+
 
 
 //***** Crecimiento de regiones para color *****
