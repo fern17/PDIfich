@@ -69,12 +69,14 @@ CImg<bool> getBitPlane(CImg<unsigned char> & img1, int bit);
 template<typename T> CImg<T> histogramaLocal(CImg<T> img, unsigned int ancho, unsigned int alto);
 CImgList<bool> umbralizarLista(CImgList<double> l_img, double umbral); 
 CImg<bool> binarizar(CImg<unsigned int> imagen, unsigned int umbral); 
+template <typename T> CImg<T> getMayorAUmbral(CImg<T> img, T umbral);
 void BubbleSort(CImg<double> &histograma, std::vector<unsigned char> & grises_ordenados);
 CImg<unsigned char> getZonaInteres(CImg<unsigned char> img, unsigned char color_fondo[], unsigned char umbral); 
 template<typename T> unsigned int contarValor(CImg<T> imagen, T valor); 
 void getPuntosCardinales(CImg<double> img, std::vector<unsigned int> & cardinalidades, double umbral); 
 CImg<float> cargar_paleta(const char* filename);
-template<typename T> void printVector(std::vector<T> V) ;
+template<typename T> void printVector(std::vector<T> V);
+
 
 //Enmascaramiento
 CImg<bool> mascaraRectangular(unsigned int w, unsigned int h, unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1);
@@ -167,6 +169,7 @@ CImg<double> hough(CImg<double> img, bool inverse);
 
 //=========================================================================================================================== 
 //=========================================================================================================================== 
+
 template<typename T> void printVector(std::vector<T> V) {
     for (unsigned int i = 0; i < V.size(); i++) {
         std::cout<<V[i]<<' ';
@@ -1342,6 +1345,17 @@ CImg<bool> binarizar(CImg<unsigned int> imagen, unsigned int umbral) {
     return imagen_binaria;
 }
 
+//Devuelve la imagen cuyos valores son mayores al umbral pedido
+template <typename T> 
+CImg<T> getMayorAUmbral(CImg<T> img, T umbral) {
+    CImg<T> retval = img;
+    cimg_forXY(img,x,y) {
+        if (img(x,y) < umbral) 
+            retval(x,y) = 0.0;
+    }
+    return retval;
+}
+
 //@ Comprime una imagen escala de gris a RLC con el nombre que se le pasa, el umbral de binarizacion especificado y el valor de inicio dado
 CImg<bool> RLCCompression(CImg<double> img, unsigned int umbral, std::string filename, bool inicio = false) {
 
@@ -1419,8 +1433,6 @@ CImg<unsigned char> getZonaInteres(CImg<unsigned char> img, unsigned char color_
     return img.get_crop(min_x, min_y, max_x, max_y);
 }
 
-
-
 CImg<bool> getMascaraRebanado(CImg<unsigned char> img, unsigned char color[], unsigned char umbral) {
     CImg<bool> ret_val(img.width(), img.height(), 1, 1, true);
     cimg_forXY(img, x, y) {
@@ -1463,35 +1475,6 @@ std::vector<unsigned int> coordHoughToImg(CImg<T> imagen, unsigned int _tita, un
     std::vector<unsigned int> retval;
     retval.assign(&ret_val[0], &ret_val[0]+4);
     return retval;
-}
-
-//@ Devuelve el angulo en grados donde se halla el mayor
-double houghAngulo(CImg<double> img) {
-    double maxi = img.max();
-    unsigned int tita;
-    cimg_forXY(img,x,y) {
-        if (fabs(img(x,y) - maxi) < EPS) {
-            tita = x;
-            break;
-        }
-    }
-    double angulo = (180.0 / double(img.width())) * double(tita) - 90.0;
-    return angulo;
-}
-
-//@ Devuelve el rho del mayor valor, en distancia imagen
-double houghRho(CImg<double> img) {
-    double maxi = img.max();
-    unsigned int _rho;
-    cimg_forXY(img,x,y) {
-        if (fabs(img(x,y) - maxi) < EPS) {
-            _rho = y;
-            break;
-        }
-    }
-    double diag = sqrt(pow(img.width(),2) + pow(img.height(),2));
-    double rho = ((2.0*diag) / double(img.height()))*double(_rho) - diag;
-    return rho;
 }
 
 
