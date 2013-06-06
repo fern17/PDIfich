@@ -19,6 +19,18 @@ using namespace std;
 //Epsilon para comparaciones
 const double EPS = 0.001;
 
+
+
+//Estructura necesaria para poder hacer ordenamiento de los mayores N pixeles en por ejemplo una T de hough
+struct pixel {
+    unsigned int x;
+    unsigned int y;
+    double valor;
+};
+
+bool pixel_es_mayor(pixel a, pixel b) { return a.valor > b.valor; }
+
+
 //Struct que representa un click de un mouse
 typedef struct Click{
     int x;
@@ -87,8 +99,8 @@ void enfocarImagen( CImg<double> &img, double lim );
 //Auxiliares o agregadas por Mari
 bool pixel_es_mayor(pixel a, pixel b);
 std::vector<pixel> getNMayores(CImg<double>  & though , unsigned int cantidad);
-bool es_deseada(CImg<T> v_evaluar, CImg<T> v_referencia, T delta_local);
-bool esta_adentro( T valor,  T min,  T max);
+template<typename T>bool es_deseada(CImg<T> v_evaluar, CImg<T> v_referencia, T delta_local);
+template<typename T>bool esta_adentro( T valor,  T min,  T max);
 
 //Enmascaramiento
 CImg<bool> mascaraRectangular(unsigned int w, unsigned int h, unsigned int x0, unsigned int y0, unsigned int x1, unsigned int y1);
@@ -1567,16 +1579,6 @@ bool es_deseada(CImg<T> v_evaluar, CImg<T> v_referencia, T delta_local) {
     return deseada;
 }
 
-
-
-//Estructura necesaria para poder hacer ordenamiento de los mayores N pixeles en por ejemplo una T de hough
-struct pixel {
-    unsigned int x;
-    unsigned int y;
-    double valor;
-};
-
-bool pixel_es_mayor(pixel a, pixel b) { return a.valor > b.valor; }
 
 
 std::vector<pixel> getNMayores(CImg<double>  & though , unsigned int cantidad) {
