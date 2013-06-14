@@ -1,8 +1,9 @@
 #include <string>
+#include <sstream>
 
 template <typename T>
 std::string toString(T const& value) {
-    stringstream sstr;
+    std::stringstream sstr;
     sstr << value;
     return sstr.str();
 }

@@ -11,7 +11,7 @@
 #include "correccionGamma.cpp"
 #include "transformadaLogaritmo.cpp"
 #include "linealPotencia.cpp"
-
+#include "toString.cpp"
 using namespace cimg_library;   //Necesario
 
 
@@ -150,6 +150,8 @@ int main(int argc, char *argv[]) {
     const double A_hb = cimg_option("-b", 5.0, "Parametro A del High Boost");
     const unsigned int transformada_mariano = cimg_option("-z", 1, "Cantidad de veces de aplicar la transformada mariano");
 
+    std::cerr<<"gamma = "<<gamma<<" A_gamma = "<<A_gamma<<'\n';
+
 	salida<<_ejemplo<<",";
 	//Obtener las imágenes de la carpeta
 	std::vector<std::string> imagenes_a_leer = getSeeds(_ejemplo, _format);
@@ -179,7 +181,7 @@ int main(int argc, char *argv[]) {
 		}
 	}
 
-    lista.display();
+    //lista.display();
 	//Declaramos la imagen compuesta
 	CImg<double> img_compuesta(2*W, 2*H, 1, C, 0 );
 
@@ -200,42 +202,62 @@ int main(int argc, char *argv[]) {
     CImg<double> resultado_promedio = promediado(img_compuesta);
     CImg<double> resultado_interpolacion = interpolacion(img_compuesta, dx, dy);
 
-    //resultado_promedio = correccionGamma(resultado_promedio, gamma, A_gamma);
-    CImg<double> intensidad = resultado_promedio.get_RGBtoHSI().get_channel(2).get_equalize(256);
-    CImg<double> promedio_ieq = cambiarIntesidad(resultado_promedio, intensidad );
+    CImg<double> promedio_gamma = correccionGamma(resultado_promedio, gamma, A_gamma);
+    CImg<double> interpolacion_gamma = correccionGamma(resultado_interpolacion, gamma, A_gamma);
 
-    //resultado_interpolacion = correccionGamma(resultado_interpolacion, gamma, A_gamma);
-    intensidad = resultado_interpolacion.get_RGBtoHSI().get_channel(2).get_equalize(256);
-    CImg<double> interpolacion_ieq = cambiarIntesidad(resultado_interpolacion, intensidad );
+    (resultado_promedio, promedio_gamma, resultado_interpolacion, interpolacion_gamma).display("Resultados", false);
+
+    //resultado_promedio = correccionGamma(resultado_promedio, gamma, A_gamma);
+ // CImg<double> intensidad = resultado_promedio.get_RGBtoHSI().get_channel(2).get_equalize(256);
+ // CImg<double> promedio_ieq = cambiarIntesidad(resultado_promedio, intensidad );
+
+ // //resultado_interpolacion = correccionGamma(resultado_interpolacion, gamma, A_gamma);
+ // intensidad = resultado_interpolacion.get_RGBtoHSI().get_channel(2).get_equalize(256);
+ // CImg<double> interpolacion_ieq = cambiarIntesidad(resultado_interpolacion, intensidad );
     
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
-
-    //Aplica el High Boost
-    CImg<double> mascara(3,3,1,1,-1);
-    mascara(1,1) = 8;
-    CImg<double> hb_prom = highBoosting(A_hb, promedio_ieq, mascara);
-    CImg<double> hb_interp = highBoosting(A_hb, interpolacion_ieq, mascara);
-
-    CImg<double> lineal_pot_prom = linealPotencia(promedio_ieq);
-    CImg<double> lineal_pot_interp = linealPotencia(interpolacion_ieq);
-    //Se aplica varias veces la transformada
-    for (unsigned int i = 1; i < transformada_mariano; i++) {
-        lineal_pot_prom = linealPotencia(lineal_pot_prom);
-        lineal_pot_interp = linealPotencia(lineal_pot_interp);
-    }
-    //Aplica la transformacion lineal potencia
     
-    //Draw Graph
-    //lineal_pot_prom.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
-    //lineal_pot_interp.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
-    
-    (resultado_promedio, promedio_ieq
-     , resultado_interpolacion,  interpolacion_ieq
-     , lineal_pot_prom, lineal_pot_interp
+    CImg<unsigned char> imagen_prom(promedio_gamma);
+    CImg<unsigned char> imagen_inter(interpolacion_gamma);
+    imagen_prom.normalize(0,255);
+    imagen_inter.normalize(0,255);
+
+ // CImgDisplay disp(imaggen,"titulo", 0);
+ // while(not disp.is_closed()) {disp.wait();}
+//    promedio_gamma.normalize(0.0, 255.0).display();
+
+
+    std::string archivo_p = std::string(_ejemplo) + "_promedio_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
+    std::string archivo_i = std::string(_ejemplo) + "_interpolacion_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
+    imagen_prom.save(archivo_p.c_str());
+    imagen_inter.save(archivo_i.c_str());
+
+ // //Aplica el High Boost
+ // CImg<double> mascara(3,3,1,1,-1);
+ // mascara(1,1) = 8;
+ // CImg<double> hb_prom = highBoosting(A_hb, promedio_ieq, mascara);
+ // CImg<double> hb_interp = highBoosting(A_hb, interpolacion_ieq, mascara);
+
+ // CImg<double> lineal_pot_prom = linealPotencia(promedio_ieq);
+ // CImg<double> lineal_pot_interp = linealPotencia(interpolacion_ieq);
+ // //Se aplica varias veces la transformada
+ // for (unsigned int i = 1; i < transformada_mariano; i++) {
+ //     lineal_pot_prom = linealPotencia(lineal_pot_prom);
+ //     lineal_pot_interp = linealPotencia(lineal_pot_interp);
+ // }
+ // //Aplica la transformacion lineal potencia
+ // 
+ // //Draw Graph
+ // //lineal_pot_prom.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
+ // //lineal_pot_interp.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
+ // 
+ // (resultado_promedio, promedio_ieq
+ //  , resultado_interpolacion,  interpolacion_ieq
+ //  , lineal_pot_prom, lineal_pot_interp
      //, hb_prom, hb_interp
      //, correccionGamma(hb_prom, gamma, A_gamma), correccionGamma(hb_interp, gamma, A_gamma)
      //,correccionGamma(interpolacion_ieq, gamma, A_gamma), correccionGammaIntensidad(interpolacion_ieq, gamma, A_gamma) 
-    ).display("Promedio|PromedioEcu|Interpolacion|InterpolacionEcu|PromLinealPot|InterLinealPot");
+   // ).display("Promedio|PromedioEcu|Interpolacion|InterpolacionEcu|PromLinealPot|InterLinealPot");
         //|PromHB|InterHB");
 
 
