@@ -31,19 +31,6 @@ unsigned int C;
 bool leer_primera = true;
 
 
-
-CImg<double> highBoosting(double A, CImg<double> & imagen, CImg<double> & mascara) {
-
-    CImg<double> ret_val;
-    cimg_forC(imagen, c) {
-        CImg<double> canal = imagen.get_channel(c);
-        ret_val.append((A-1)*canal + canal.get_convolve(mascara), 'c' );  
-    }
-
-    return ret_val;
-
-}
-
 //@ Cambia el canal de intesidad de una imagen RGB, y la devuelve en RGB
 template <typename T>
 CImg<T> cambiarIntesidad(CImg<T> imagen, CImg<T> intesidad) {
@@ -129,6 +116,62 @@ CImg<double> interpolacion(CImg<double> img_compuesta, double dx = 0.5, double d
 }
 
 
+//@ Devuelve el Operador de Sobel para el gradiente en las 4 direcciones
+CImgList<double> OperadorSobel(){
+    CImgList<double> ret_val(4,3,3,1,1,0);
+    //Gradiente en X
+    ret_val[0](0,0) = -1;
+    ret_val[0](1,0) = -2;
+    ret_val[0](2,0) = -1;
+    ret_val[0](0,2) = 1;
+    ret_val[0](1,2) = 2;
+    ret_val[0](2,2) = 1;
+
+    ret_val[1](0,0) = -1;
+    ret_val[1](0,1) = -2;
+    ret_val[1](0,2) = -1;
+    ret_val[1](2,0) = 1;
+    ret_val[1](2,1) = 2;
+    ret_val[1](2,2) = 1;
+
+    ret_val[2](0,1) = -1;
+    ret_val[2](0,2) = -2;
+    ret_val[2](1,2) = -1;
+    ret_val[2](1,0) = 1;
+    ret_val[2](2,0) = 2;
+    ret_val[2](2,1) = 1;
+
+    ret_val[3](0,1) = -1;
+    ret_val[3](0,0) = -2;
+    ret_val[3](1,0) = -1;
+    ret_val[3](1,2) = 1;
+    ret_val[3](2,2) = 2;
+    ret_val[3](2,1) = 1;
+
+    return ret_val;
+}
+
+
+/*
+Aplica el operador deseado por ejemplo OperadorSobel
+*/
+CImg<double> AplicarOperador(CImg<double> & img, CImgList<double> &operador) {
+    CImgList<double> resultados;
+    
+    CImg<double> retval(img.width(), img.height(), 1, 1, 0);
+    unsigned int cantidad = operador.size();
+    for (unsigned int i = 0; i < cantidad; i++) {
+        CImg<double> tempy = img.get_convolve(operador[i]);
+        retval += tempy;
+    }
+     
+    return retval;
+}
+
+
+
+
+
 int main(int argc, char *argv[]) {
 	std::ofstream salida("output.txt", std::ios::app);
 
@@ -138,19 +181,19 @@ int main(int argc, char *argv[]) {
 	const char* _ejemplo = cimg_option("-e", "cave", "Carpeta de Ejemplos");
 	//Leer sobre que formato se va a trabajar
 	const char* _format = cimg_option("-f", "jpg", "Formato de Ejemplos");
-	//Cantidad de muestras en el kernel de convolucion cubico
-    unsigned int _muestras = cimg_option("-m", 49 , "Cantidad de muestras en el kernel");
 
     //Para realizar la interpolacion, se debe elegir un paso (dx,dy) desde el centro del vecindario
     const double dx = cimg_option("-x", 0.5, "Paso en x en la interpolacion");
     const double dy = cimg_option("-y", 0.5, "Paso en y en la interpolacion");
     const double gamma = cimg_option("-g", 0.8, "Gamma de la correccion gamma");
-    const double A_gamma = cimg_option("-a", 1.2, "Parametro c del logaritmo");
-    const double c_log = cimg_option("-c", 0.8, "Parametro c del logaritmo");
-    const double A_hb = cimg_option("-b", 5.0, "Parametro A del High Boost");
-    const unsigned int transformada_mariano = cimg_option("-z", 1, "Cantidad de veces de aplicar la transformada mariano");
+    const double A_gamma = cimg_option("-a", 1.0, "Parametro a de la corrección gamma");
+    const double cte_bordes = cimg_option("-b", 0.05, "Constante de Bordes");
 
     std::cerr<<"gamma = "<<gamma<<" A_gamma = "<<A_gamma<<'\n';
+
+    //Obtengo el operador SOBEL
+    CImgList<double> bordes;
+    CImgList<double> operador_sobel = OperadorSobel();
 
 	salida<<_ejemplo<<",";
 	//Obtener las imágenes de la carpeta
@@ -178,10 +221,11 @@ int main(int argc, char *argv[]) {
 			}
 
 			lista.push_back( img_tmp.resize(W, H) );
+            CImg<double> borde = AplicarOperador(img_tmp, operador_sobel);
+            bordes.push_back(  borde );
 		}
 	}
 
-    //lista.display();
 	//Declaramos la imagen compuesta
 	CImg<double> img_compuesta(2*W, 2*H, 1, C, 0 );
 
@@ -205,61 +249,34 @@ int main(int argc, char *argv[]) {
     CImg<double> promedio_gamma = correccionGamma(resultado_promedio, gamma, A_gamma);
     CImg<double> interpolacion_gamma = correccionGamma(resultado_interpolacion, gamma, A_gamma);
 
-    (resultado_promedio, promedio_gamma, resultado_interpolacion, interpolacion_gamma).display("Resultados", false);
+    unsigned int n_bordes = bordes.size();
+    CImg<double> bordes_total(W,H,1,1);
+    for (unsigned int i = 0; i < n_bordes; i++) {
+        bordes_total += bordes[i];
+    }
 
-    //resultado_promedio = correccionGamma(resultado_promedio, gamma, A_gamma);
- // CImg<double> intensidad = resultado_promedio.get_RGBtoHSI().get_channel(2).get_equalize(256);
- // CImg<double> promedio_ieq = cambiarIntesidad(resultado_promedio, intensidad );
+    bordes_total.normalize(0.0,1.0);
 
- // //resultado_interpolacion = correccionGamma(resultado_interpolacion, gamma, A_gamma);
- // intensidad = resultado_interpolacion.get_RGBtoHSI().get_channel(2).get_equalize(256);
- // CImg<double> interpolacion_ieq = cambiarIntesidad(resultado_interpolacion, intensidad );
-    
+    CImg<double> promedio_posproceso = promedio_gamma.get_normalize(0.0,1.0) + cte_bordes * bordes_total;
+    CImg<double> interpolacion_posproceso = interpolacion_gamma.get_normalize(0.0,1.0) + cte_bordes * bordes_total;
+  
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
+
+    lista.display("Imagenes de Entrada", false);
+    (resultado_promedio, promedio_gamma, promedio_posproceso).display("Resultado Promedio, Promedio Gamma, Promedio Posproceso", false);
+    (resultado_interpolacion, interpolacion_gamma, interpolacion_posproceso).display("Resultado Interpolacion, Interpolacion Gamma, Interpolacion Posproceso", false);
+
+    
     
     CImg<unsigned char> imagen_prom(promedio_gamma);
     CImg<unsigned char> imagen_inter(interpolacion_gamma);
     imagen_prom.normalize(0,255);
     imagen_inter.normalize(0,255);
 
- // CImgDisplay disp(imaggen,"titulo", 0);
- // while(not disp.is_closed()) {disp.wait();}
-//    promedio_gamma.normalize(0.0, 255.0).display();
-
-
     std::string archivo_p = std::string(_ejemplo) + "_promedio_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
     std::string archivo_i = std::string(_ejemplo) + "_interpolacion_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
     imagen_prom.save(archivo_p.c_str());
     imagen_inter.save(archivo_i.c_str());
-
- // //Aplica el High Boost
- // CImg<double> mascara(3,3,1,1,-1);
- // mascara(1,1) = 8;
- // CImg<double> hb_prom = highBoosting(A_hb, promedio_ieq, mascara);
- // CImg<double> hb_interp = highBoosting(A_hb, interpolacion_ieq, mascara);
-
- // CImg<double> lineal_pot_prom = linealPotencia(promedio_ieq);
- // CImg<double> lineal_pot_interp = linealPotencia(interpolacion_ieq);
- // //Se aplica varias veces la transformada
- // for (unsigned int i = 1; i < transformada_mariano; i++) {
- //     lineal_pot_prom = linealPotencia(lineal_pot_prom);
- //     lineal_pot_interp = linealPotencia(lineal_pot_interp);
- // }
- // //Aplica la transformacion lineal potencia
- // 
- // //Draw Graph
- // //lineal_pot_prom.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
- // //lineal_pot_interp.get_RGBtoHSI().get_channel(2).get_equalize(256).display_graph("titulo",3);
- // 
- // (resultado_promedio, promedio_ieq
- //  , resultado_interpolacion,  interpolacion_ieq
- //  , lineal_pot_prom, lineal_pot_interp
-     //, hb_prom, hb_interp
-     //, correccionGamma(hb_prom, gamma, A_gamma), correccionGamma(hb_interp, gamma, A_gamma)
-     //,correccionGamma(interpolacion_ieq, gamma, A_gamma), correccionGammaIntensidad(interpolacion_ieq, gamma, A_gamma) 
-   // ).display("Promedio|PromedioEcu|Interpolacion|InterpolacionEcu|PromLinealPot|InterLinealPot");
-        //|PromHB|InterHB");
-
 
     return 0;
 }
