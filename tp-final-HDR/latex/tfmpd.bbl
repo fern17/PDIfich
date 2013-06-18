@@ -1,0 +1,39 @@
+\begin{thebibliography}{1}
+\providecommand{\url}[1]{#1}
+\def\UrlFont{\rmfamily}
+\providecommand{\newblock}{\relax}
+\providecommand{\bibinfo}[2]{#2}
+\providecommand\BIBentrySTDinterwordspacing{\spaceskip=0pt\relax}
+\providecommand\BIBentryALTinterwordstretchfactor{4}
+\providecommand\BIBentryALTinterwordspacing{\spaceskip=\fontdimen2\font plus
+\BIBentryALTinterwordstretchfactor\fontdimen3\font minus
+  \fontdimen4\font\relax}
+\providecommand\BIBforeignlanguage[2]{{%
+\expandafter\ifx\csname l@#1\endcsname\relax
+\typeout{** WARNING: IEEEtran.bst: No hyphenation pattern has been}%
+\typeout{** loaded for the language `#1'. Using the pattern for}%
+\typeout{** the default language instead.}%
+\else
+\language=\csname l@#1\endcsname
+\fi
+#2}}
+
+\bibitem{Nayar2000}
+T.~Nayar, S. y~Mitsunaga, ``High dynamic range imaging: Spatially varying pixel
+  exposures,'' en \emph{Computer Vision and Pattern Recognition, 2000.
+  Proceedings. IEEE Conference}, vol.~1, pp. 472--479, 2000.
+
+\bibitem{Richards2006}
+J.~Richards y X.~Jia, \emph{Remote Sensing Digital Image Analysis, 4th
+  Edition}.\hskip 1em plus 0.5em minus 0.4em\relax Springer, 2002.
+
+\bibitem{Keys1981}
+R.~Keys, ``Cubic convolution interpolation for digital image processing,'' en
+  \emph{IEEE Transactions On Acoustics, Speech and Signal Processing}, vol.~29,
+  no.~6, pp. 1153--1160, 1981.
+
+\bibitem{Gonzalez2002}
+R.~Gonzalez y R.~Woods, \emph{Digital Image Processing, 2nd Edition}.\hskip 1em
+  plus 0.5em minus 0.4em\relax Prentice Hall, 2002.
+
+\end{thebibliography}
