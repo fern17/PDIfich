@@ -141,9 +141,9 @@ CImg<double> AplicarOperador(CImg<double> & img, CImgList<double> &operador) {
 int main(int argc, char *argv[]) {
 
 	//Leer sobre que ejemplo se va a trabajar
-	const char* _ejemplo = cimg_option("-e", "cave", "Carpeta de Ejemplos");
+	const char* _ejemplo = cimg_option("-e", "puenteeste", "Carpeta de Ejemplos");
 	//Leer sobre que formato se va a trabajar
-	const char* _format = cimg_option("-f", "jpg", "Formato de Ejemplos");
+	const char* _format = cimg_option("-f", "JPG", "Formato de Ejemplos");
 
     //Para realizar la interpolacion, se debe elegir un paso (dx,dy) desde el centro del vecindario
     const double dx = cimg_option("-x", 0.5, "Paso en x en la interpolacion");

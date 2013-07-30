@@ -27,6 +27,7 @@ octave-core
 *.gif
 *.tif
 *.jpg
+*.JPG
 *.bmp
 *.ppm
 *.png

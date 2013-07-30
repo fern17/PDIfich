@@ -227,7 +227,7 @@ int main(int argc, char *argv[]) {
 	const double desvio = cimg_option("-d", 10, "Desvio del ruido gaussiano");
    
     //inciso b
-    estambul(input, umbral, opcion);  
+    //estambul(input, umbral, opcion);  
     //inciso c
     mosquito(input2, umbral, opcion, desvio);
     return 0;
