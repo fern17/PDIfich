@@ -88,7 +88,8 @@ CImg<double> interpolacion(CImg<double> img_compuesta, double dx = 0.5, double d
 
 // Devuelve el Operador de Sobel para el gradiente en las 4 direcciones
 CImgList<double> OperadorSobel(){
-    CImgList<double> ret_val(4,3,3,1,1,0);
+    //CImgList<double> ret_val(4,3,3,1,1,0);
+    CImgList<double> ret_val(2,3,3,1,1,0);
     //Gradiente en X
     ret_val[0](0,0) = -1;
     ret_val[0](1,0) = -2;
@@ -96,7 +97,8 @@ CImgList<double> OperadorSobel(){
     ret_val[0](0,2) = 1;
     ret_val[0](1,2) = 2;
     ret_val[0](2,2) = 1;
-
+    
+    //Gradiente en Y
     ret_val[1](0,0) = -1;
     ret_val[1](0,1) = -2;
     ret_val[1](0,2) = -1;
@@ -104,6 +106,7 @@ CImgList<double> OperadorSobel(){
     ret_val[1](2,1) = 2;
     ret_val[1](2,2) = 1;
 
+    /*
     ret_val[2](0,1) = -1;
     ret_val[2](0,2) = -2;
     ret_val[2](1,2) = -1;
@@ -117,7 +120,7 @@ CImgList<double> OperadorSobel(){
     ret_val[3](1,2) = 1;
     ret_val[3](2,2) = 2;
     ret_val[3](2,1) = 1;
-
+    */
     return ret_val;
 }
 
@@ -127,7 +130,26 @@ Aplica el operador deseado por ejemplo OperadorSobel
 */
 CImg<double> AplicarOperador(CImg<double> & img, CImgList<double> &operador) {
     CImgList<double> resultados;
+    unsigned int cantidad = operador.size();
     
+    //Aplica los operadores a la imagen y lo guarda en resultados
+    for (unsigned int i = 0; i < cantidad; i++) {
+        CImg<double> tempy = img.get_convolve(operador[i]);
+        resultados.push_back(tempy);
+    }
+
+    //Mezcla los resultados utilizando la formula: G = sqrt( G(x)G(x) + G(y)G(y) )
+    CImg<double> retval(img.width(), img.height(), 1, img.spectrum(), 0);
+    cimg_forXYC(retval, x, y, c) {
+        retval(x,y,0,c) = std::sqrt(std::pow(resultados[0](x,y,0,c),2) + std::pow(resultados[1](x,y,0,c),2));
+    }
+
+    return retval;
+}
+
+/* Version vieja
+CImg<double> AplicarOperador(CImg<double> & img, CImgList<double> &operador) {
+    CImgList<double> resultados;
     CImg<double> retval(img.width(), img.height(), 1, 1, 0);
     unsigned int cantidad = operador.size();
     for (unsigned int i = 0; i < cantidad; i++) {
@@ -137,6 +159,7 @@ CImg<double> AplicarOperador(CImg<double> & img, CImgList<double> &operador) {
      
     return retval;
 }
+*/
 
 int main(int argc, char *argv[]) {
 
@@ -151,6 +174,8 @@ int main(int argc, char *argv[]) {
     const double gamma = cimg_option("-g", 0.8, "Gamma de la correccion gamma");
     const double A_gamma = cimg_option("-a", 1.0, "Parametro a de la corrección gamma");
     const double cte_bordes = cimg_option("-b", 0.05, "Constante de Bordes");
+    const bool guardar = cimg_option("-s", true, "Guardar archivos");
+    const bool dibujar = cimg_option("-d", true, "Dibujar imagenes");
 
     std::cout<<"\n\nCreacion de imagenes de alto rango dinamico mediante interpolacion de fuentes\n";
     std::cout<<"Autores: Damian Benassi, Fernando Nellmeldin y Mariano Peyregne\n";
@@ -237,7 +262,8 @@ int main(int argc, char *argv[]) {
     std::cout<<"Aplicando el realce de bordes...\n";
     //Aplicamos realce de bordes
     unsigned int n_bordes = bordes.size();
-    CImg<double> bordes_total(W,H,1,1);
+    //CImg<double> bordes_total(W,H,1,1);
+    CImg<double> bordes_total(W, H, 1, C, 0.0);
     for (unsigned int i = 0; i < n_bordes; i++) {
         bordes_total += bordes[i];
     }
@@ -253,21 +279,25 @@ int main(int argc, char *argv[]) {
     salida.close();
 
     //Dibujamos
-    lista.display("Imagenes de Entrada", false);
-    (resultado_promedio, promedio_gamma, promedio_posproceso).display("Resultado Promedio, Promedio Gamma, Promedio Posproceso", false);
-    (resultado_interpolacion, interpolacion_gamma, interpolacion_posproceso).display("Resultado Interpolacion, Interpolacion Gamma, Interpolacion Posproceso", false);
+    if (dibujar == true) {
+        lista.display("Imagenes de Entrada", false);
+        (resultado_promedio, promedio_gamma, promedio_posproceso).display("Resultado Promedio, Promedio Gamma, Promedio Posproceso", false);
+        (resultado_interpolacion, interpolacion_gamma, interpolacion_posproceso).display("Resultado Interpolacion, Interpolacion Gamma, Interpolacion Posproceso", false);
+    }
 
-    //Conversion para guardado 
-    CImg<unsigned char> imagen_prom(promedio_gamma);
-    CImg<unsigned char> imagen_inter(interpolacion_gamma);
-    imagen_prom.normalize(0,255);
-    imagen_inter.normalize(0,255);
+    if (guardar == true) {
+        //Conversion para guardado 
+        CImg<unsigned char> imagen_prom(promedio_gamma);
+        CImg<unsigned char> imagen_inter(interpolacion_gamma);
+        imagen_prom.normalize(0,255);
+        imagen_inter.normalize(0,255);
 
-    //Guardado
-    std::string archivo_p = std::string(_ejemplo) + "_promedio_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
-    std::string archivo_i = std::string(_ejemplo) + "_interpolacion_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
-    imagen_prom.save(archivo_p.c_str());
-    imagen_inter.save(archivo_i.c_str());
+        //Guardado
+        std::string archivo_p = std::string(_ejemplo) + "_promedio_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
+        std::string archivo_i = std::string(_ejemplo) + "_interpolacion_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
+        imagen_prom.save(archivo_p.c_str());
+        imagen_inter.save(archivo_i.c_str());
+    }
 
     return 0;
 }
