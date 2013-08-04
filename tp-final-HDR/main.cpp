@@ -293,8 +293,8 @@ int main(int argc, char *argv[]) {
         resultado_imagen_inter.normalize(0,255);
 
         //Guardado
-        std::string archivo_spp = std::string(_ejemplo) + "_promedio_sinpostproceso.png";
-        std::string archivo_spi = std::string(_ejemplo) + "_interpolacion_sinpostproceso.png";
+        std::string archivo_spp = "resultados/" + std::string(_ejemplo) + "_promedio_sinpostproceso.png";
+        std::string archivo_spi = "resultados/" + std::string(_ejemplo) + "_interpolacion_sinpostproceso.png";
         resultado_imagen_prom.save(archivo_spp.c_str());
         resultado_imagen_inter.save(archivo_spi.c_str());
 
@@ -306,8 +306,8 @@ int main(int argc, char *argv[]) {
         postproceso_imagen_inter.normalize(0,255);
 
         //Guardado
-        std::string archivo_p = std::string(_ejemplo) + "_promedio__g_" + toString(gamma) + "_a_" + toString(A_gamma) + "_b_" + toString(cte_bordes) + ".png";
-        std::string archivo_i = std::string(_ejemplo) + "_interpolacion__g_" + toString(gamma) + "_a_" + toString(A_gamma) + "_b_" + toString(cte_bordes) + ".png";
+        std::string archivo_p = "resultados/" + std::string(_ejemplo) + "_promedio__g_" + toString(gamma) + "_a_" + toString(A_gamma) + "_b_" + toString(cte_bordes) + ".png";
+        std::string archivo_i = "resultados/" + std::string(_ejemplo) + "_interpolacion__g_" + toString(gamma) + "_a_" + toString(A_gamma) + "_b_" + toString(cte_bordes) + ".png";
         postproceso_imagen_prom.save(archivo_p.c_str());
         postproceso_imagen_inter.save(archivo_i.c_str());
     }
