@@ -164,7 +164,7 @@ CImg<double> AplicarOperador(CImg<double> & img, CImgList<double> &operador) {
 int main(int argc, char *argv[]) {
 
 	//Leer sobre que ejemplo se va a trabajar
-	const char* _ejemplo = cimg_option("-e", "puenteeste", "Carpeta de Ejemplos");
+	const char* _ejemplo = cimg_option("-e", "interiorb", "Carpeta de Ejemplos");
 	//Leer sobre que formato se va a trabajar
 	const char* _format = cimg_option("-f", "JPG", "Formato de Ejemplos");
 
@@ -173,7 +173,7 @@ int main(int argc, char *argv[]) {
     const double dy = cimg_option("-y", 0.5, "Paso en y en la interpolacion");
     const double gamma = cimg_option("-g", 0.8, "Gamma de la correccion gamma");
     const double A_gamma = cimg_option("-a", 1.0, "Parametro a de la corrección gamma");
-    const double cte_bordes = cimg_option("-b", 0.05, "Constante de Bordes");
+    const double cte_bordes = cimg_option("-b", 0.2, "Constante de Bordes");
     const bool guardar = cimg_option("-s", true, "Guardar archivos");
     const bool dibujar = cimg_option("-d", true, "Dibujar imagenes");
 
@@ -257,8 +257,7 @@ int main(int argc, char *argv[]) {
     //Aplicamos correccion gamma
     CImg<double> promedio_gamma = correccionGamma(resultado_promedio, gamma, A_gamma);
     CImg<double> interpolacion_gamma = correccionGamma(resultado_interpolacion, gamma, A_gamma);
-
-
+    
     std::cout<<"Aplicando el realce de bordes...\n";
     //Aplicamos realce de bordes
     unsigned int n_bordes = bordes.size();
@@ -269,34 +268,55 @@ int main(int argc, char *argv[]) {
     }
     bordes_total.normalize(0.0,1.0);
 
-    //Definimos las imagenes resultado finales luego del posproceso
-    CImg<double> promedio_posproceso = promedio_gamma.get_normalize(0.0,1.0) + cte_bordes * bordes_total;
-    CImg<double> interpolacion_posproceso = interpolacion_gamma.get_normalize(0.0,1.0) + cte_bordes * bordes_total;
+
+    //Definimos las imagenes resultado finales luego del postproceso
+    CImg<double> promedio_postproceso = promedio_gamma.get_normalize(0.0,1.0) + cte_bordes * bordes_total;
+    CImg<double> interpolacion_postproceso = interpolacion_gamma.get_normalize(0.0,1.0) + cte_bordes * bordes_total;
+
+    //(promedio_postproceso, interpolacion_postproceso).display();
 
     std::cout<<"Proceso terminado.\n";
     //Contador del tiempo
     salida<<float( clock () - begin_time ) /  CLOCKS_PER_SEC<<"\n";
     salida.close();
 
+
+    if (guardar == true) {
+
+        std::cout<<"Guardando las imagenes...\n";
+        //-----Guardado sin postproceso
+        //Conversion para guardado 
+        CImg<double> resultado_imagen_prom(resultado_promedio);
+        CImg<double> resultado_imagen_inter(resultado_interpolacion);
+
+        resultado_imagen_prom.normalize(0,255);
+        resultado_imagen_inter.normalize(0,255);
+
+        //Guardado
+        std::string archivo_spp = std::string(_ejemplo) + "_promedio_sinpostproceso.png";
+        std::string archivo_spi = std::string(_ejemplo) + "_interpolacion_sinpostproceso.png";
+        resultado_imagen_prom.save(archivo_spp.c_str());
+        resultado_imagen_inter.save(archivo_spi.c_str());
+
+        //-----Guardado con postproceso
+        //Conversion para guardado 
+        CImg<double> postproceso_imagen_prom(promedio_postproceso);
+        CImg<double> postproceso_imagen_inter(interpolacion_postproceso);
+        postproceso_imagen_prom.normalize(0,255);
+        postproceso_imagen_inter.normalize(0,255);
+
+        //Guardado
+        std::string archivo_p = std::string(_ejemplo) + "_promedio__g_" + toString(gamma) + "_a_" + toString(A_gamma) + "_b_" + toString(cte_bordes) + ".png";
+        std::string archivo_i = std::string(_ejemplo) + "_interpolacion__g_" + toString(gamma) + "_a_" + toString(A_gamma) + "_b_" + toString(cte_bordes) + ".png";
+        postproceso_imagen_prom.save(archivo_p.c_str());
+        postproceso_imagen_inter.save(archivo_i.c_str());
+    }
+
     //Dibujamos
     if (dibujar == true) {
         lista.display("Imagenes de Entrada", false);
-        (resultado_promedio, promedio_gamma, promedio_posproceso).display("Resultado Promedio, Promedio Gamma, Promedio Posproceso", false);
-        (resultado_interpolacion, interpolacion_gamma, interpolacion_posproceso).display("Resultado Interpolacion, Interpolacion Gamma, Interpolacion Posproceso", false);
-    }
-
-    if (guardar == true) {
-        //Conversion para guardado 
-        CImg<unsigned char> imagen_prom(promedio_gamma);
-        CImg<unsigned char> imagen_inter(interpolacion_gamma);
-        imagen_prom.normalize(0,255);
-        imagen_inter.normalize(0,255);
-
-        //Guardado
-        std::string archivo_p = std::string(_ejemplo) + "_promedio_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
-        std::string archivo_i = std::string(_ejemplo) + "_interpolacion_g_" + toString(gamma) + "_a_" + toString(A_gamma) + ".png";
-        imagen_prom.save(archivo_p.c_str());
-        imagen_inter.save(archivo_i.c_str());
+        (resultado_promedio, promedio_postproceso).display("Resultado Promedio, Promedio Postproceso", false);
+        (resultado_interpolacion, interpolacion_postproceso).display("Resultado Interpolacion, Interpolacion Postproceso", false);
     }
 
     return 0;

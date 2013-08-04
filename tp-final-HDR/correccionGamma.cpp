@@ -7,7 +7,7 @@ CImg<double> correccionGamma(CImg<double> img, double gamma, double A) {
     CImg<double> ret_val(img.width(), img.height(), img.depth(), img.spectrum(), 0.0);
     cimg_forC(img, c) {
         cimg_forXY(img,x,y) {
-            double val = A*pow(img(x,y,0,c),gamma);
+            double val = A*pow(std::fabs(img(x,y,0,c)),gamma); //agregado fabs
             ret_val(x,y,0,c) = val;
         }
     }
